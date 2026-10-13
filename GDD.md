@@ -2,19 +2,16 @@
 
 [Volver al README](README.md)
 
-**Juegos en Red - Grado en Diseño y Desarrollo de Videojuegos - URJC - Curso 2026/27**  
-**Grupo:** [NÚMERO DE GRUPO]  
-**Autores:** José Antonio Najarro Camacho, Víctor Martín Monterrubio y Daniel Heredia Naranjo  
-**Equipo de desarrollo:** [NOMBRE DEL EQUIPO]  
+**Juegos en Red · Grado en Diseño y Desarrollo de Videojuegos · URJC · Curso 2026/27**  
+**Grupo J · Órbita Tres**
+
 **Repositorio:** https://github.com/Yusuf062/super-estrella
 
-| Nombre y apellidos | Correo URJC | Usuario de GitHub |
+| Nombre y apellidos | Correo universitario | GitHub |
 | :--- | :--- | :--- |
-| José Antonio Najarro Camacho | [CORREO URJC] | Yusuf062 |
-| Víctor Martín Monterrubio | [CORREO URJC] | [USUARIO DE GITHUB] |
-| Daniel Heredia Naranjo | [CORREO URJC] | [USUARIO DE GITHUB] |
-
-> Los campos entre corchetes deben completarse antes de la entrega. Los nombres de los personajes son provisionales. Las imágenes pendientes deben añadirse a la carpeta `img/` antes de entregar.
+| José Antonio Najarro Camacho | [ja.najarro.2024@alumnos.urjc.es](mailto:ja.najarro.2024@alumnos.urjc.es) | [Yusuf062](https://github.com/Yusuf062) |
+| Víctor Martín Monterrubio | Pendiente de añadir | [VictorMM64](https://github.com/VictorMM64) |
+| Daniel Heredia Naranjo | [d.heredia.2024@alumnos.urjc.es](mailto:d.heredia.2024@alumnos.urjc.es) | [DanHeredia](https://github.com/DanHeredia) |
 
 ## Índice
 
@@ -28,342 +25,209 @@
 8. [Comunicación y marketing](#8-comunicación-y-marketing)
 9. [Referencias](#9-referencias)
 
----
-
 ## 1. Introducción
 
-### 1.1. Concepto del juego
+**Super Estrella** es un juego cooperativo de plataformas y puzles en 2D. Dos jugadores controlan a los hermanos Izan y Gael, que recorren tres naves espaciales para encontrar a su padre, el comandante Oris.
 
-**Super Estrella** es un videojuego cooperativo de plataformas y puzles en 2D para dos jugadores conectados en red. Los protagonistas son Izan y Gael, dos hermanos que recorren una flota de naves espaciales para descubrir qué ocurrió con su padre, el comandante Oris, desaparecido años atrás.
+Izan activa terminales tecnológicos y Gael empuja cajas pesadas. Deben combinar sus habilidades para abrir puertas, superar obstáculos y alcanzar juntos la salida. La aventura termina con un enfrentamiento contra su padre, planteado como un puzle cooperativo que utiliza las mecánicas aprendidas durante los niveles.
 
-Cada hermano posee una habilidad diferente. Izan domina la tecnología y puede manipular circuitos, mientras que Gael utiliza su fuerza para mover objetos y abrir caminos. Los jugadores deberán comunicarse, coordinar sus movimientos y combinar ambas habilidades para superar obstáculos, activar mecanismos y avanzar por las distintas naves.
-
-La aventura termina con un enfrentamiento contra el comandante Oris, convertido en líder de la flota enemiga. El combate final no se basa únicamente en atacar, sino en resolver un puzle bajo presión para desactivar la armadura y el sistema de control que mantienen al padre enfrentado a sus hijos.
-
-### 1.2. Propuesta de valor
-
-El juego busca ofrecer una experiencia cooperativa sencilla de entender, pero basada en la coordinación real entre dos personas. Sus principales elementos diferenciales son:
-
-- **Habilidades complementarias:** ninguno de los hermanos puede completar la aventura por sí solo.
-- **Puzles sincronizados:** algunas acciones deben realizarse al mismo tiempo o en un orden concreto.
-- **Cambios de gravedad:** ciertas zonas alteran el movimiento y obligan a reinterpretar el escenario.
-- **Narrativa integrada:** las transmisiones, registros y conversaciones entre los hermanos desarrollan el conflicto familiar sin detener constantemente la partida.
-- **Jefe final cooperativo:** reutiliza las mecánicas aprendidas durante los niveles en lugar de introducir un sistema de combate completamente distinto.
-
-![Imagen promocional de Super Estrella](img/portada_presentacion.png)
-
-*Figura 1. Imagen promocional provisional del juego.*
-
----
+La cooperación es el centro del juego: ninguno de los hermanos puede completar los niveles solo. Se plantea una aventura corta y viable para un equipo de tres integrantes.
 
 ## 2. Especificaciones básicas
 
 | Aspecto | Descripción |
 | :--- | :--- |
-| **Título** | Super Estrella |
-| **Género** | Plataformas y puzles cooperativos |
-| **Número de jugadores** | 2 jugadores en red y en tiempo real |
-| **Público objetivo** | Jugadores de 10 años en adelante, especialmente parejas de amigos o familiares |
-| **Clasificación orientativa** | PEGI 7, por violencia fantástica leve y ausencia de contenido explícito |
-| **Plataforma** | Navegador web para ordenador |
-| **Tecnología prevista** | Phaser 3, HTML, CSS y JavaScript |
-| **Duración estimada** | Entre 25 y 40 minutos para completar la aventura |
-| **Duración por nivel** | Entre 7 y 12 minutos |
-| **Representación** | 2D con vista lateral |
-| **Modo de juego** | Cooperativo, no competitivo |
-| **Licencia del código** | Apache 2.0 |
+| Título | Super Estrella |
+| Género | Plataformas y puzles cooperativos |
+| Jugadores | Dos, con acciones simultáneas y cooperación en tiempo real |
+| Público objetivo | Jugadores de 10 años en adelante interesados en jugar con amigos o familiares |
+| Plataforma | Navegador web para ordenador |
+| Tecnología prevista | Phaser 3, HTML, CSS y JavaScript |
+| Representación | 2D, vista lateral |
+| Alcance | Tres niveles cortos; el enfrentamiento final forma parte del tercero |
+| Duración | Se ajustará mediante pruebas de resolución de los puzles |
+| Idioma | Castellano |
+| Licencia del código | Apache 2.0 |
 
----
+Primero se desarrollará una versión local para dos jugadores en el mismo teclado. En las fases siguientes se incorporarán la comunicación mediante API REST y el juego desde dos ordenadores mediante WebSockets.
 
 ## 3. Jugabilidad
 
-### 3.1. Objetivo del juego
+### 3.1. Objetivo y ciclo de juego
 
-El objetivo de ambos jugadores es atravesar tres naves, reactivar sus núcleos de energía y alcanzar el puente de mando de la nave capitana. Para superar cada zona, los hermanos deberán llegar juntos a la compuerta de salida después de completar los puzles obligatorios.
+Los jugadores deben resolver los puzles de cada sala y llegar juntos a la compuerta de salida. La progresión es lineal: completan una nave y pasan a la siguiente. Ganan de forma conjunta al desactivar el sistema que controla a Oris.
 
-La victoria es compartida: los dos jugadores ganan cuando desactivan el sistema de control de Oris y completan la secuencia final. Si uno cae en una trampa, pierde toda su energía o se desconecta, la partida no puede continuar normalmente. En caso de derrota dentro del nivel, ambos reaparecen en el último punto de control activado.
+En cada sala observan los obstáculos, reparten las acciones según las habilidades de sus personajes y ejecutan el puzle para abrir el camino. Un hermano debe facilitar el paso del otro, combinando saltos e interacciones.
 
-### 3.2. Bucle principal
+### 3.2. Controles
 
-1. Los jugadores observan la sala e identifican obstáculos, terminales y mecanismos.
-2. Deciden qué hermano debe actuar y coordinan el orden de las acciones.
-3. Ejecutan el puzle combinando movimiento, saltos y habilidades.
-4. Recogen fragmentos de memoria opcionales y activan un punto de control.
-5. Alcanzan juntos la salida y avanzan a la siguiente sala o nave.
-
-### 3.3. Controles
-
-Durante la versión local, ambos jugadores podrán compartir teclado. En la versión en red, cada cliente utilizará los controles del jugador 1.
-
-| Acción | Jugador 1 / cliente en red | Jugador 2 en modo local |
+| Acción | Jugador 1 / cada cliente en red | Jugador 2 en modo local |
 | :--- | :---: | :---: |
-| Moverse a la izquierda | `A` | `Flecha izquierda` |
-| Moverse a la derecha | `D` | `Flecha derecha` |
-| Saltar | `W` | `Flecha arriba` |
-| Agacharse o descender | `S` | `Flecha abajo` |
-| Interactuar / usar habilidad | `E` | `Intro` |
-| Reiniciar desde el punto de control | `R` | `Retroceso` |
-| Pausa | `Esc` | `Esc` |
+| Moverse | `A` y `D` | Flechas izquierda y derecha |
+| Saltar | `W` | Flecha arriba |
+| Interactuar | `E` | `Intro` |
+| Reiniciar sala | Botón de la interfaz | Botón de la interfaz |
+| Abrir pausa | `Esc` | `Esc` |
 
-### 3.4. Mecánicas principales
+El ratón se utiliza para los botones de menús, ajustes y resultados. En red, cada jugador controla únicamente a su personaje.
 
-- **Movimiento y plataformas:** correr, saltar, agacharse y desplazarse sobre plataformas fijas o móviles.
-- **Cooperación:** puertas dobles, interruptores separados y mecanismos temporizados exigen la participación de ambos jugadores.
-- **Habilidad de Izan - enlace tecnológico:** activa terminales, cambia el sentido de cintas transportadoras, desactiva barreras de energía y redirige circuitos.
-- **Habilidad de Gael - impulso de fuerza:** empuja cajas pesadas, rompe paneles dañados y mantiene palancas que retrocederían al soltarlas.
-- **Fragmentos de memoria:** coleccionables opcionales que revelan mensajes del padre y mejoran la puntuación final.
-- **Puntos de control:** guardan el progreso dentro del nivel. Deben ser activados por los dos hermanos.
-- **Energía:** cada personaje dispone de tres unidades. Los láseres, descargas y golpes eliminan una unidad; caer al vacío provoca reaparición inmediata y resta una unidad.
-- **Reanimación:** si un jugador pierde toda su energía, el compañero puede reactivarlo manteniendo la interacción durante tres segundos, siempre que alcance su posición.
+### 3.3. Mecánicas principales
 
-### 3.5. Elementos interactivos
+- **Movimiento:** desplazamiento horizontal y salto sobre plataformas fijas o móviles.
+- **Izan:** activa terminales para abrir determinadas puertas o desactivar láseres.
+- **Gael:** empuja cajas pesadas manteniendo la interacción y moviéndose hacia ellas.
+- **Placas de presión:** permanecen activas mientras un personaje o una caja está encima. Algunas puertas requieren dos placas activas a la vez.
+- **Gravedad reducida:** las zonas señalizadas permiten saltar más alto y caer más despacio. Afectan a los personajes, no a las cajas.
+- **Peligros:** tocar un láser o caer al vacío hace que ambos reaparezcan en el último punto de control.
+- **Puntos de control:** se activan al completar determinadas salas. Al reaparecer se restablecen las cajas y mecanismos del tramo para evitar bloqueos.
+- **Salida compartida:** solo permite avanzar cuando están presentes ambos hermanos.
 
-| Elemento | Función |
+### 3.4. Físicas y dificultad
+
+Se utilizarán gravedad, salto y colisiones con suelos, paredes y objetos. Las cajas se desplazarán horizontalmente y caerán sobre las superficies. Las plataformas móviles seguirán rutas fijas y transportarán a los personajes.
+
+La dificultad aumenta al combinar mecanismos conocidos: abrir una puerta, mantener una placa con una caja y coordinar esas acciones mientras se esquivan peligros. La gravedad reducida modifica los saltos sin añadir controles nuevos. Los láseres temporizados mostrarán una señal antes de activarse.
+
+### 3.5. Niveles y escenarios
+
+| Nivel | Escenario y contenido |
 | :--- | :--- |
-| Terminal | Izan lo activa para modificar puertas, láseres o gravedad |
-| Caja de carga | Gael puede empujarla; sirve de plataforma o contrapeso |
-| Placa de presión | Permanece activa mientras un jugador u objeto está encima |
-| Palanca sincronizada | Requiere que ambos jugadores interactúen casi al mismo tiempo |
-| Plataforma móvil | Transporta jugadores u objetos siguiendo una ruta |
-| Cinta transportadora | Aplica movimiento horizontal y puede cambiar de dirección |
-| Campo gravitatorio | Reduce, aumenta o invierte temporalmente la gravedad |
-| Barrera de energía | Bloquea a Gael hasta que Izan desvíe la corriente |
+| 1. El Carguero Silente | Almacén espacial. Introduce saltos, terminales, cajas y puertas. Los hermanos reciben una señal de Oris. |
+| 2. Laboratorio Helix | Laboratorio con plataformas móviles y zonas de gravedad reducida. Descubren que su padre está conectado a un sistema de control. |
+| 3. La Vigilia | Nave capitana. Combina las mecánicas anteriores con láseres y termina con el rescate de Oris en el puente de mando. |
 
-### 3.6. Físicas y dificultad
+Cada nivel tendrá pocas salas, con cámara fija y distribución legible. Las cajas necesarias no se colocarán junto a zonas donde puedan perderse sin posibilidad de reinicio.
 
-El juego utiliza gravedad, velocidad horizontal, salto, colisiones y aceleración. Las cajas reaccionan al empuje y al peso; las plataformas móviles conservan al personaje sobre su superficie; las cintas transportadoras alteran su desplazamiento; y los campos gravitatorios modifican la altura y duración del salto. Algunas compuertas y plataformas están temporizadas, por lo que los jugadores deben actuar con precisión.
+**Ejemplo de puzle:** Gael coloca una caja sobre una placa para que Izan cruce una puerta. Desde el otro lado, Izan activa un terminal que permite pasar a Gael. Ambos alcanzan juntos la salida.
 
-La dificultad aumenta de forma gradual. La primera nave presenta cada habilidad por separado. La segunda combina gravedad, objetos móviles y acciones simultáneas. La tercera mezcla las mecánicas anteriores con láseres, rutas alternativas y límites de tiempo. Los puntos de control evitan repetir secciones demasiado largas.
+### 3.6. Enfrentamiento final
 
-### 3.7. Estructura de niveles y escenarios
+Oris permanece conectado al núcleo de la nave. Para liberarlo, los hermanos deben desactivar tres mecanismos: Gael coloca cajas sobre placas que permiten acceder a los terminales de Izan, mientras ambos esquivan láseres con patrones repetitivos.
 
-#### Nave 1 - El Carguero Silente
+Cada mecanismo desactivado queda registrado como punto de control. Al completar los tres se apaga el núcleo y ambos ganan. No se necesita un sistema de armas o ataques de los protagonistas.
 
-Funciona como introducción. Es una nave de transporte abandonada, con pasillos dañados y almacenes de carga. Enseña el movimiento básico, el uso de terminales, el empuje de cajas y las puertas cooperativas. Termina al reactivar el núcleo auxiliar y recibir una transmisión incompleta de Oris.
+### 3.7. Puntuación
 
-#### Nave 2 - Laboratorio Helix
-
-Laboratorio dedicado a experimentos gravitatorios. Incluye cámaras con gravedad reducida, plataformas móviles, barreras eléctricas y objetos que flotan. Los jugadores descubren que Oris no desapareció voluntariamente y encuentran registros sobre un sistema capaz de alterar su voluntad.
-
-#### Nave 3 - La Vigilia
-
-Nave capitana de la flota. Combina las mecánicas anteriores con sistemas de seguridad, láseres, cintas transportadoras y puzles temporizados. Los hermanos deben separar sus rutas durante breves tramos, ayudándose desde habitaciones distintas hasta reunirse en el puente de mando.
-
-#### Enfrentamiento final - Comandante Oris
-
-Oris utiliza una armadura conectada al núcleo de la nave. Mientras los jugadores esquivan ondas de energía, Izan debe desactivar tres nodos y Gael debe orientar sus conductos físicos. Cada nodo requiere una acción sincronizada. Tras desactivar los tres, los hermanos liberan a su padre y detienen la nave.
-
-![Mapa general de los niveles](img/mapa_escenario.png)
-
-*Figura 2. Distribución prevista de las tres naves y el enfrentamiento final.*
-
-### 3.8. Puntuación y rejugabilidad
-
-La puntuación no determina un ganador, pero permite comparar resultados:
-
-- 1.000 puntos por completar cada nave.
-- 100 puntos por cada fragmento de memoria.
-- Bonificación de hasta 500 puntos según el tiempo empleado.
-- Penalización de 50 puntos por cada caída o pérdida completa de energía.
-
-Al finalizar se muestran el tiempo total, fragmentos encontrados, reanimaciones y puntuación conjunta. Esto anima a repetir los niveles y mejorar la coordinación.
-
----
+La puntuación es conjunta: 1.000 puntos por completar cada nivel y una penalización de 50 por cada reinicio debido a una muerte, sin bajar de cero. Los resultados muestran el tiempo total y los puntos, permitiendo repetir la aventura para mejorar.
 
 ## 4. Narrativa
 
 ### 4.1. Historia
 
-Años antes del comienzo del juego, el comandante Oris dirigía una misión científica que investigaba una fuente de energía llamada Eclipse. La expedición desapareció y el caso se cerró sin supervivientes. Sus hijos, Izan y Gael, crecieron creyendo que había muerto.
+El comandante Oris desapareció durante una expedición que investigaba la energía Eclipse. Sus hijos crecieron creyendo que había muerto, hasta que reciben una transmisión con una frase que solo conocía su familia.
 
-Una noche reciben una señal codificada con una frase que únicamente conocía su familia. La transmisión procede de una flota que ha comenzado a ocupar sistemas cercanos. Los hermanos roban una pequeña nave y siguen la señal, infiltrándose en los distintos vehículos de la flota.
+Izan y Gael siguen la señal por una flota. Al principio creen que su padre se ha convertido en su comandante enemigo, pero los mensajes encontrados entre niveles revelan que está conectado a un sistema que altera su voluntad.
 
-Los fragmentos de memoria revelan que la energía Eclipse puede controlar sistemas mecánicos y afectar a la mente humana. Oris intentó destruirla, pero quedó conectado a ella y fue convertido en la figura visible de la flota. Al llegar al puente de mando, los hermanos deben decidir si aún confían en él. El enfrentamiento termina cuando rompen la conexión y descubren que una inteligencia desconocida emitía las órdenes desde fuera de la nave. La familia escapa, pero la última señal deja abierta una posible continuación.
+Al llegar al puente de mando, Oris intenta impedirles el paso. Los hermanos desactivan el núcleo, lo liberan y escapan juntos. La historia se presenta mediante textos breves al comenzar o terminar cada nivel, sin escenas cinematográficas complejas ni voces grabadas.
 
 ### 4.2. Personajes
 
-#### Izan - Jugador 1
+| Personaje | Personalidad, motivación y evolución |
+| :--- | :--- |
+| Izan, 20 años | Prudente y observador. Quiere descubrir la verdad sobre Oris. Activa terminales y aprende a confiar en Gael. |
+| Gael, 18 años | Impulsivo y protector. Quiere recuperar a su familia. Empuja cajas y aprende a actuar con paciencia. |
+| Oris | Antiguo comandante y padre de los protagonistas. Intenta resistirse al sistema de control. Su rescate resuelve el conflicto familiar. |
 
-<img src="img/personaje_1.png" alt="Boceto de Izan" width="250">
-
-- **Edad:** 20 años.
-- **Personalidad:** observador, prudente y algo desconfiado.
-- **Motivación:** averiguar la verdad sobre la desaparición de su padre.
-- **Habilidad:** conectarse a terminales y manipular sistemas electrónicos.
-- **Evolución:** comienza intentando controlarlo todo y aprende a confiar en las decisiones de su hermano.
-
-#### Gael - Jugador 2
-
-<img src="img/personaje_2.png" alt="Boceto de Gael" width="250">
-
-- **Edad:** 18 años.
-- **Personalidad:** impulsivo, optimista y protector.
-- **Motivación:** recuperar a su padre y mantener unida a su familia.
-- **Habilidad:** mover cargas, romper obstáculos y accionar mecanismos pesados.
-- **Evolución:** deja de actuar sin pensar y comprende que la fuerza solo resulta útil cuando se coordina con los demás.
-
-#### Comandante Oris - Antagonista
-
-<img src="img/enemigo_1.png" alt="Boceto del comandante Oris" width="250">
-
-Oris fue explorador y científico antes de quedar vinculado a la energía Eclipse. Durante la aventura parece ser el villano, pero sus mensajes contienen pequeñas contradicciones que revelan que intenta resistirse al control. En el enfrentamiento final alterna amenazas con recuerdos de sus hijos.
-
----
+Los rasgos de los hermanos se reflejan en pequeños intercambios de diálogo y en la necesidad de ayudarse.
 
 ## 5. Imagen y diseño visual
 
 ### 5.1. Logotipo
 
-![Logotipo de Super Estrella](img/logo.png)
+<p align="center">
+  <img src="img/logo.png" alt="Logotipo de Super Estrella" width="450">
+</p>
 
-*Figura 3. Logotipo de Super Estrella: la palabra «SUPER» en letras rojas inclinadas, un aro rojo y una estrella amarilla con contorno oscuro sobre un fondo crema de textura envejecida. La estrella vincula la identidad del juego con su ambientación espacial; las letras grandes facilitan su reconocimiento en el menú y los materiales promocionales.*
+El logotipo utiliza letras rojas inclinadas con la palabra «SUPER», un aro rojo y una estrella amarilla sobre fondo crema. La estrella relaciona el nombre con la ambientación espacial.
 
-### 5.2. Estilo visual
+### 5.2. Estilo, cámara y colores
 
-El juego empleará **arte de píxeles** con personajes construidos sobre una cuadrícula aproximada de 32 x 32 píxeles. Las siluetas serán sencillas y las animaciones cortas para mantener un alcance viable. Los fondos tendrán más detalle que los personajes, pero conservarán contornos limpios y buena legibilidad.
+Se empleará arte de píxeles sencillo, con personajes sobre una cuadrícula aproximada de 32 x 32 píxeles y animaciones breves. La representación será lateral en 2D, con **cámara fija por sala**, sin desplazamiento ni ampliación dinámica. La resolución base prevista es 1280 x 720, adaptada proporcionalmente a la ventana.
 
-Cada hermano tendrá una forma y color reconocibles. Los elementos interactivos emitirán luz o mostrarán una animación breve. Los peligros emplearán rojo y formas angulosas; los objetos utilizables, cian o amarillo.
-
-### 5.3. Paleta de colores
-
-![Paleta de colores](img/paleta_colores.png)
-
-*Figura 4. Paleta principal del juego.*
-
-| Uso | Color | Función visual |
+| Elemento | Color | Función |
 | :--- | :---: | :--- |
-| Espacio y fondos | `#0B1026` | Profundidad y contraste |
-| Metal de las naves | `#28334D` | Escenarios y plataformas |
-| Izan y tecnología | `#36D1DC` | Terminales, circuitos y jugador 1 |
-| Gael y fuerza | `#FF9F43` | Objetos físicos y jugador 2 |
-| Peligros | `#FF4D6D` | Láseres, daño y alertas |
-| Objetivos | `#FFE66D` | Salidas, coleccionables y pistas |
+| Fondo | `#0B1026` | Espacio y profundidad |
+| Estructura | `#28334D` | Suelos y paredes metálicas |
+| Izan y terminales | `#36D1DC` | Interacciones tecnológicas |
+| Gael y cajas | `#FF9F43` | Interacciones físicas |
+| Peligros | `#FF4D6D` | Láseres y avisos |
+| Objetivos | `#FFE66D` | Salidas y puntos de control |
 
-### 5.4. Cámara y representación
+Los elementos también se distinguirán por formas e iconos. Las plataformas utilizables destacarán frente a los fondos decorativos.
 
-- **Representación:** 2D con vista lateral.
-- **Resolución base:** 1280 x 720 píxeles, adaptada proporcionalmente a la ventana.
-- **Cámara:** sigue el punto medio entre los dos personajes y ajusta ligeramente el encuadre para mantenerlos visibles.
-- **Límite cooperativo:** si los jugadores intentan alejarse demasiado, la cámara deja de avanzar y aparece un aviso visual para que vuelvan a reunirse.
-- **Capas:** fondo espacial, estructura de la nave, elementos interactivos, personajes, efectos e interfaz.
+### 5.3. Inspiración y bocetos
 
-### 5.5. Inspiración artística y cultural
+**Fireboy and Watergirl** inspira los puzles con habilidades complementarias y salas compartidas [1]. **Star Wars** sirve como referencia para la aventura espacial y el conflicto familiar, con personajes y escenarios propios [2].
 
-![Panel de inspiración](img/moodboard_inspiracion.png)
+Los bocetos mostrarán los dos hermanos y al padre, el menú principal y una sala de juego con plataformas, cajas, terminales y salida. La pantalla de juego permitirá entender tanto la interfaz como un ejemplo de cooperación.
 
-*Figura 5. Referencias visuales y de diseño.*
+**Pendiente antes de la entrega:** incorporar los bocetos de personajes, menú y pantalla de juego.
 
-- **Fireboy and Watergirl:** inspira la cooperación asimétrica y los puzles que requieren dos personajes [1].
-- **Portal 2:** inspira la comunicación entre jugadores y la presentación gradual de mecánicas [2].
-- **Star Wars:** sirve como referencia cultural para el conflicto familiar y la ambientación de aventura espacial, sin reutilizar personajes, lugares ni elementos protegidos de la saga [3].
-- **Celeste:** inspira la claridad visual de los obstáculos y la respuesta precisa del movimiento [4].
-
----
+<!-- Descomentar cada imagen cuando se suba el archivo correspondiente a img/. -->
+<!-- ![Boceto de Izan](img/personaje_1.png) -->
+<!-- ![Boceto de Gael](img/personaje_2.png) -->
+<!-- ![Boceto de Oris](img/enemigo_1.png) -->
+<!-- ![Boceto del menú](img/boceto_menu_principal.png) -->
+<!-- ![Boceto de la pantalla de juego](img/boceto_pantalla_juego.png) -->
 
 ## 6. Sonido
 
-### 6.1. Banda sonora
+La música del menú será electrónica y tranquila, con ambiente espacial. En los niveles se utilizará una pista ambiental suave y en el enfrentamiento final una más intensa. Un sonido breve indicará la victoria.
 
-| Escena | Descripción musical |
-| :--- | :--- |
-| Menú principal | Tema electrónico lento, misterioso y melódico |
-| El Carguero Silente | Ambiente mecánico con percusión suave |
-| Laboratorio Helix | Sintetizadores flotantes y sonidos invertidos |
-| La Vigilia | Ritmo más rápido, alarmas integradas y mayor tensión |
-| Enfrentamiento final | Variación intensa del tema principal con pausas durante cada nodo |
-| Final | Versión calmada del tema familiar |
+Los efectos cubrirán saltos, empuje de cajas, terminales, placas, puertas, muerte y botones de interfaz. Los avisos importantes tendrán una señal visual equivalente. Los ajustes permitirán modificar por separado música y efectos.
 
-La música será propia o procederá de bancos con licencias compatibles, y todos los recursos externos aparecerán acreditados.
-
-### 6.2. Efectos de sonido
-
-Habrá sonidos diferenciados para salto, aterrizaje, daño, reanimación, puertas, plataformas, terminales, cajas, cambio de gravedad, fragmentos de memoria y botones de interfaz. Las habilidades de Izan utilizarán tonos digitales agudos; las de Gael, impactos graves. Un aviso estéreo señalará cuándo el compañero está fuera de la cámara o necesita ayuda.
-
----
+Se utilizarán recursos propios o de terceros con licencia compatible. Antes de incorporar cada recurso externo se registrarán su autor, enlace y licencia en los créditos.
 
 ## 7. Interfaz y diagrama de flujo
 
 ### 7.1. Pantallas
 
-#### Menú principal
+- **Menú:** logo y botones Jugar, Ajustes, Ayuda y Créditos. En las fases de red mostrará la conexión al servidor y los usuarios conectados.
+- **Sala de espera:** en red, espera a dos jugadores con personajes diferentes. En local se comienza directamente.
+- **Partida:** sala completa, personajes, tiempo, puntuación e indicaciones de interacción.
+- **Pausa:** continuar o salir. En red se compartirá el estado de pausa entre ambos jugadores.
+- **Resultados:** tiempo, puntos y botones Repetir y Menú.
+- **Ayuda, ajustes y créditos:** controles y habilidades, volumen y autores respectivamente.
 
-Incluye las opciones **Jugar**, **Ajustes**, **Ayuda** y **Créditos**. En fases posteriores mostrará el estado de conexión y el número de usuarios conectados.
-
-![Boceto del menú principal](img/boceto_menu_principal.png)
-
-*Figura 6. Boceto del menú principal.*
-
-#### Pantalla de juego
-
-La interfaz muestra la energía de ambos hermanos, los fragmentos encontrados, el tiempo y un indicador contextual de interacción. Se evita ocupar la zona central para no tapar plataformas ni peligros.
-
-![Boceto de la pantalla de juego](img/boceto_pantalla_juego.png)
-
-*Figura 7. Boceto de la pantalla de juego.*
-
-#### Ajustes y fin de partida
-
-<p align="center">
-  <img src="img/boceto_ajustes.png" alt="Boceto de ajustes" width="45%">
-  <img src="img/boceto_fin_partida.png" alt="Boceto de fin de partida" width="45%">
-</p>
-
-*Figura 8. Pantallas de ajustes y resultados.*
+Si se desconecta un jugador, termina la partida y se informa al compañero. Si cae el servidor, se muestra un aviso que bloquea las acciones y comprueba la conexión hasta recuperarla.
 
 ### 7.2. Diagrama de flujo
 
 ```mermaid
 flowchart TD
-    A[Pantalla de carga] --> B[Menú principal]
-    B --> C[Jugar]
-    B --> D[Ajustes]
-    B --> E[Ayuda]
-    B --> F[Créditos]
-    D --> B
-    E --> B
-    F --> B
-    C --> G[Sala de espera]
-    G --> H[Selección de nivel]
-    H --> I[Partida]
-    I --> J[Pausa]
-    J --> I
-    J --> B
-    I --> K[Resultados]
-    K --> H
-    K --> B
+    M[Menú principal] --> J{Modo}
+    M --> O[Ajustes, ayuda y créditos]
+    O --> M
+    J -->|Local| P[Partida: nivel y sala actuales]
+    J -->|En red| E[Sala de espera]
+    E -->|Dos jugadores| P
+    P -->|Sala completada| C{Final de aventura}
+    C -->|No: siguiente sala o nave| P
+    C -->|Sí| R[Resultados]
+    P -->|Muerte: punto de control| P
+    P -->|Esc| A[Pausa]
+    A -->|Continuar| P
+    A -->|Salir| M
+    R -->|Repetir| J
+    R -->|Salir| M
 ```
 
-![Diagrama de flujo exportado](img/diagrama_flujo.png)
-
-*Figura 9. Flujo de navegación entre las pantallas del juego.*
-
----
+Las desconexiones interrumpen este flujo y llevan al aviso correspondiente. El reinicio conserva el progreso anterior al último punto de control.
 
 ## 8. Comunicación y marketing
 
-El mensaje principal será: **«Dos hermanos. Una señal. Ningún camino en solitario.»** La comunicación se dirigirá a jugadores jóvenes interesados en experiencias cooperativas cortas y accesibles.
+El mensaje principal será **«Dos hermanos. Una señal. Un viaje juntos.»** La promoción se dirigirá a personas que disfrutan resolviendo retos con un amigo.
 
-- Publicación de capturas y fragmentos breves de desarrollo en TikTok, Instagram y X.
-- Diario de desarrollo semanal con la evolución de personajes, naves y puzles.
-- Tráiler de entre 30 y 45 segundos centrado en la cooperación y los cambios de gravedad.
-- Página del juego en itch.io con descripción, controles, imágenes y créditos.
-- Publicación posterior en Newgrounds y Game Jolt, de acuerdo con la fase final de la práctica.
-- Imagen promocional, logotipo, fotografías animadas de jugabilidad y presentación de cada miembro del equipo como parte de un pequeño estudio.
-
----
+Se compartirán capturas y vídeos cortos de puzles cooperativos en redes sociales. La página del juego explicará las habilidades, los controles y cómo jugar. En la fase de publicación se prevé distribuir la versión local en itch.io, Newgrounds y Game Jolt.
 
 ## 9. Referencias
 
-[1] Albet, O. (2009). *Fireboy and Watergirl in the Forest Temple* [Videojuego]. Oslo Albet.
+[1] *Fireboy and Watergirl*. Serie de videojuegos. Referencia de cooperación asimétrica y diseño de salas.
 
-[2] Valve Corporation. (2011). *Portal 2* [Videojuego]. Valve Corporation.
+[2] *Star Wars*. Saga cinematográfica de Lucasfilm. Referencia de ambientación espacial y conflicto familiar.
 
-[3] Lucas, G. (Director). (1980). *Star Wars: Episode V - The Empire Strikes Back* [Película]. Lucasfilm.
+[3] Phaser Studio. *Documentación de Phaser*. https://docs.phaser.io/
 
-[4] Extremely OK Games. (2018). *Celeste* [Videojuego]. Matt Makes Games.
+[4] Enunciado de la práctica de *Juegos en Red*, URJC, y plantilla de entrega de la Fase 1 facilitada en el Aula Virtual.
 
-[5] Schell, J. (2019). *The Art of Game Design: A Book of Lenses* (3.ª ed.). CRC Press.
-
-[6] Phaser Studio. (s. f.). *Documentación de Phaser 3*. https://docs.phaser.io/
-
-Los recursos gráficos y sonoros definitivos se añadirán a esta lista con su autor, licencia y enlace antes de la publicación del juego.
+Los recursos gráficos y sonoros externos se añadirán con sus atribuciones cuando se seleccionen.
