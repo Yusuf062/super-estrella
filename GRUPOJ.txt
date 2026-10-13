@@ -1,0 +1,11 @@
+Grupo J
+Equipo: Órbita Tres
+Juego: Super Estrella
+
+Integrantes:
+José Antonio Najarro Camacho
+Víctor Martín Monterrubio
+Daniel Heredia Naranjo
+
+Repositorio:
+https://github.com/Yusuf062/super-estrella
