@@ -22,7 +22,7 @@ La versión final permitirá jugar desde dos ordenadores conectados en red y en 
 | :--- | :--- | :--- |
 | José Antonio Najarro Camacho | ja.najarro.2024@alumnos.urjc.es | [Yusuf062](https://github.com/Yusuf062) |
 | Víctor Martín Monterrubio | Pendiente de añadir | [VictorMM64](https://github.com/VictorMM64) |
-| Daniel Heredia Naranjo | Pendiente de añadir | Pendiente de añadir |
+| Daniel Heredia Naranjo | d.heredia.2024@alumnos.urjc.es | [DanHeredia](https://github.com/DanHeredia) |
 
 ### Organización del trabajo
 
