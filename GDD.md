@@ -10,7 +10,7 @@
 | Nombre y apellidos | Correo universitario | GitHub |
 | :--- | :--- | :--- |
 | José Antonio Najarro Camacho | [ja.najarro.2024@alumnos.urjc.es](mailto:ja.najarro.2024@alumnos.urjc.es) | [Yusuf062](https://github.com/Yusuf062) |
-| Víctor Martín Monterrubio | [v.martinm.2024@alumnos.urjc.es](mailto:v.martinm.2024@alumnos.urjc.es) | [VictorMM64](https://github.com/VictorMM64) |
+| Víctor Martín Monterrubio | Pendiente de añadir | [VictorMM64](https://github.com/VictorMM64) |
 | Daniel Heredia Naranjo | [d.heredia.2024@alumnos.urjc.es](mailto:d.heredia.2024@alumnos.urjc.es) | [DanHeredia](https://github.com/DanHeredia) |
 
 ## Índice
@@ -140,35 +140,42 @@ Los rasgos de los hermanos se reflejan en pequeños intercambios de diálogo y e
 
 El logotipo utiliza letras rojas inclinadas con la palabra «SUPER», un aro rojo y una estrella amarilla sobre fondo crema. La estrella relaciona el nombre con la ambientación espacial.
 
-### 5.2. Estilo, cámara y colores
+### 5.2. Aspectos técnicos
 
-Se empleará arte de píxeles sencillo, con personajes sobre una cuadrícula aproximada de 32 x 32 píxeles y animaciones breves. La representación será lateral en 2D, con **cámara fija por sala**, sin desplazamiento ni ampliación dinámica. La resolución base prevista es 1280 x 720, adaptada proporcionalmente a la ventana.
+- **Cámara:** representación lateral en 2D, con cámara fija que muestra toda la sala.
+- **Resolución:** pantallas sobre una cuadrícula de 320 x 180 píxeles, ampliadas sin suavizado a 1280 x 720, en formato panorámico 16:9.
+- **Personajes:** cuadrícula de 32 x 32 píxeles y animaciones breves.
 
-| Elemento | Color | Función |
-| :--- | :---: | :--- |
-| Fondo | `#0B1026` | Espacio y profundidad |
-| Estructura | `#28334D` | Suelos y paredes metálicas |
-| Izan y terminales | `#36D1DC` | Interacciones tecnológicas |
-| Gael y cajas | `#FF9F43` | Interacciones físicas |
-| Peligros | `#FF4D6D` | Láseres y avisos |
-| Objetivos | `#FFE66D` | Salidas y puntos de control |
+### 5.3. Estilo visual y colores
 
-Los elementos también se distinguirán por formas e iconos. Las plataformas utilizables destacarán frente a los fondos decorativos.
+El juego utilizará arte de píxeles sencillo, con formas claras y una estética espacial. Los colores servirán para diferenciar a los personajes y reconocer los elementos importantes del escenario.
 
-### 5.3. Inspiración y bocetos
+- Los fondos de las naves tendrán tonos azules oscuros y grises, para que las plataformas y objetos destaquen sobre la decoración.
+- Izan y los terminales utilizarán tonos cian; Gael y las cajas, tonos naranjas. Así se identificará qué personaje puede interactuar con cada elemento.
+- Los láseres y peligros se señalarán en rojo, mientras que las salidas y puntos de control destacarán en amarillo.
+- Se podrán utilizar tonos más claros u oscuros para luces y sombras, además de colores de piel, pelo y detalles. Las formas e iconos complementarán el uso de colores.
+
+### 5.4. Inspiración y bocetos
 
 **Fireboy and Watergirl** inspira los puzles con habilidades complementarias y salas compartidas [1]. **Star Wars** sirve como referencia para la aventura espacial y el conflicto familiar, con personajes y escenarios propios [2].
 
-Los bocetos mostrarán los dos hermanos y al padre, el menú principal y una sala de juego con plataformas, cajas, terminales y salida. La pantalla de juego permitirá entender tanto la interfaz como un ejemplo de cooperación.
+Los siguientes bocetos digitales muestran los hermanos, el padre, el menú y una sala de ejemplo. Sus formas y colores se colocan sobre una cuadrícula de píxeles uniforme. Son propuestas visuales para la Fase 1; los recursos finales se adaptarán durante el desarrollo.
 
-**Pendiente antes de la entrega:** incorporar los bocetos de personajes, menú y pantalla de juego.
+#### Personajes
 
-<!-- Descomentar cada imagen cuando se suba el archivo correspondiente a img/. -->
-<!-- ![Boceto de Izan](img/personaje_1.png) -->
-<!-- ![Boceto de Gael](img/personaje_2.png) -->
-<!-- ![Boceto de Oris](img/enemigo_1.png) -->
-<!-- ![Boceto del menú](img/boceto_menu_principal.png) -->
-<!-- ![Boceto de la pantalla de juego](img/boceto_pantalla_juego.png) -->
+<img src="img/personaje_1.png" alt="Boceto de Izan" width="250">
+<img src="img/personaje_2.png" alt="Boceto de Gael" width="250">
+<img src="img/enemigo_1.png" alt="Boceto de Oris" width="250">
+
+#### Menú principal
+
+![Boceto del menú principal](img/boceto_menu_principal.png)
+
+#### Sala de juego
+
+![Boceto de la pantalla de juego](img/boceto_pantalla_juego.png)
+
+La sala ilustra las plataformas, el terminal de Izan, la caja de Gael, una placa de presión, un láser y la salida compartida.
 
 ## 6. Sonido
 
