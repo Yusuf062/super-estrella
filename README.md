@@ -44,7 +44,7 @@ El concepto, las mecánicas, la narrativa y el diseño audiovisual se describen 
 
 | Fase | Contenido | Estado |
 | :--- | :--- | :--- |
-| Fase 1 | Equipo, concepto y documento de diseño | En preparación |
+| Fase 1 | Equipo, concepto y documento de diseño | Entregada |
 | Fase 2 | Desarrollo del juego en local | Pendiente |
 | Fase 3 | Comunicación cliente-servidor mediante API REST | Pendiente |
 | Fase 4 | Multijugador en tiempo real mediante WebSockets | Pendiente |
