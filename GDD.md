@@ -233,8 +233,4 @@ Se compartirán capturas y vídeos cortos de puzles cooperativos en redes social
 
 [2] *Star Wars*. Saga cinematográfica de Lucasfilm. Referencia de ambientación espacial y conflicto familiar.
 
-[3] Phaser Studio. *Documentación de Phaser*. https://docs.phaser.io/
-
-[4] Enunciado de la práctica de *Juegos en Red*, URJC, y plantilla de entrega de la Fase 1 facilitada en el Aula Virtual.
-
 Los recursos gráficos y sonoros externos se añadirán con sus atribuciones cuando se seleccionen.
