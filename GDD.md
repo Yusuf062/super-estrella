@@ -10,7 +10,7 @@
 | Nombre y apellidos | Correo universitario | GitHub |
 | :--- | :--- | :--- |
 | José Antonio Najarro Camacho | [ja.najarro.2024@alumnos.urjc.es](mailto:ja.najarro.2024@alumnos.urjc.es) | [Yusuf062](https://github.com/Yusuf062) |
-| Víctor Martín Monterrubio | Pendiente de añadir | [VictorMM64](https://github.com/VictorMM64) |
+| Víctor Martín Monterrubio | [v.martinm.2024@alumnos.urjc.es](mailto:v.martinm.2024@alumnos.urjc.es) | [VictorMM64](https://github.com/VictorMM64) |
 | Daniel Heredia Naranjo | [d.heredia.2024@alumnos.urjc.es](mailto:d.heredia.2024@alumnos.urjc.es) | [DanHeredia](https://github.com/DanHeredia) |
 
 ## Índice
