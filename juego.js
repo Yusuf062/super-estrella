@@ -1,7 +1,5 @@
 "use strict";
 
-// Primera parte: escenas básicas, entrada de teclado y físicas de plataformas.
-// No usa módulos ni peticiones de red: funciona abriendo index.html directamente.
 const canvas = document.querySelector("#juego");
 const ctx = canvas.getContext("2d");
 ctx.imageSmoothingEnabled = false;
@@ -11,6 +9,7 @@ const capas = {
   pausa: document.querySelector("#pausa"),
   informacion: document.querySelector("#informacion"),
   ajustes: document.querySelector("#ajustes"),
+  resultado: document.querySelector("#resultado"),
 };
 const estadoTexto = document.querySelector("#estado");
 const botonPausa = document.querySelector("#boton-pausa");
@@ -21,34 +20,43 @@ const pulsaciones = new Set();
 const FISICA = {
   gravedad: 420,
   velocidad: 62,
+  empuje: 42,
   salto: 170,
   paso: 1 / 120,
 };
 
-// Coordenadas del mundo lógico de 320 x 180 píxeles.
+const Y_SUELO = 160;
 const plataformas = [
-  { x: 0, y: 160, w: 320, h: 20 },
-  { x: 70, y: 134, w: 48, h: 7 },
-  { x: 148, y: 108, w: 45, h: 7 },
-  { x: 226, y: 82, w: 48, h: 7 },
+  { x: 0, y: Y_SUELO, w: 320, h: 20 },
+  { x: 64, y: 130, w: 47, h: 5 },
+  { x: 128, y: 108, w: 46, h: 7 },
+  { x: 190, y: 82, w: 46, h: 7 },
 ];
+const terminal = { x: 84, y: 110, w: 16, h: 20, activo: false };
+const caja = { x: 143, inicioX: 143, y: Y_SUELO - 16, w: 16, h: 16 };
+const riel = { inicio: 26, fin: 242 };
+const placa = { x: 216, w: 23, activa: false };
+const marco = { x: 263, y: 40, w: 14, h: 76 };
+const puerta = { x: 263, y: 116, w: 14, h: Y_SUELO - 116, abierta: false };
+const salida = { x: 278, y: 116, w: 42, h: Y_SUELO - 116 };
+const PUNTOS_CARGUERO = 1000;
 
 function crearJugador(nombre, x, color, izquierda, derecha, salto, archivo) {
   const imagen = new Image();
   imagen.src = archivo;
   return {
     nombre, inicioX: x, color, izquierda, derecha, salto, imagen,
-    x, y: 136, w: 12, h: 24, vx: 0, vy: 0, enSuelo: false, direccion: 1,
+    x, y: Y_SUELO - 24, w: 12, h: 24, vx: 0, vy: 0, enSuelo: true, direccion: 1,
   };
 }
 
-const jugadores = [
-  crearJugador("Izan", 30, "#36d1dc", "KeyA", "KeyD", "KeyW", "img/personaje_1.png"),
-  crearJugador("Gael", 50, "#ff9f43", "ArrowLeft", "ArrowRight", "ArrowUp", "img/personaje_2.png"),
-];
+const izan = crearJugador("Izan", 29, "#36d1dc", "KeyA", "KeyD", "KeyW", "img/personaje_1.png");
+const gael = crearJugador("Gael", 49, "#ff9f43", "ArrowLeft", "ArrowRight", "ArrowUp", "img/personaje_2.png");
+const jugadores = [izan, gael];
 
 let escena = "menu";
 let tiempo = 0;
+let puntos = 0;
 let acumulado = 0;
 let anterior = 0;
 
@@ -69,12 +77,17 @@ function cambiarEscena(nueva) {
 
 function reiniciar() {
   tiempo = 0;
+  puntos = 0;
+  terminal.activo = false;
+  caja.x = caja.inicioX;
+  placa.activa = false;
+  puerta.abierta = false;
   for (const jugador of jugadores) {
     jugador.x = jugador.inicioX;
-    jugador.y = 136;
+    jugador.y = Y_SUELO - jugador.h;
     jugador.vx = 0;
     jugador.vy = 0;
-    jugador.enSuelo = false;
+    jugador.enSuelo = true;
     jugador.direccion = 1;
   }
 }
@@ -82,7 +95,7 @@ function reiniciar() {
 function empezar() {
   reiniciar();
   cambiarEscena("jugando");
-  estadoTexto.textContent = "Sala de entrenamiento: probad los saltos hasta la plataforma superior.";
+  actualizarObjetivo();
   document.activeElement?.blur();
 }
 
@@ -94,7 +107,7 @@ function pausar() {
 
 function continuar() {
   cambiarEscena("jugando");
-  estadoTexto.textContent = "Sala de entrenamiento: probad los saltos hasta la plataforma superior.";
+  actualizarObjetivo();
   document.activeElement?.blur();
 }
 
@@ -130,9 +143,9 @@ mostrarControles.addEventListener("change", () => {
 });
 document.querySelector("#volver-ajustes").addEventListener("click", volverAlMenu);
 abrirDesdeMenu("#ayuda", () => mostrarInformacion("CÓMO JUGAR",
-  '<p><strong class="cian">Izan:</strong> A y D para moverse; W para saltar.</p>' +
-  '<p><strong class="naranja">Gael:</strong> flechas izquierda y derecha para moverse; flecha arriba para saltar.</p>' +
-  '<p>Subid por las plataformas. Esc abre la pausa. El ratón permite utilizar los menús.</p>'));
+  '<p><strong class="cian">Izan:</strong> A y D para moverse, W para saltar y E junto al terminal.</p>' +
+  '<p><strong class="naranja">Gael:</strong> ← y → para moverse, ↑ para saltar. Mantén Intro mientras andas hacia la caja.</p>' +
+  '<p>Enciende el terminal, deja la caja sobre la placa y cruza la puerta con los dos hermanos. Esc abre la pausa.</p>'));
 abrirDesdeMenu("#creditos", () => mostrarInformacion("ÓRBITA TRES",
   '<img class="logo" src="img/logo.png" alt="Super Estrella"><p>Grupo J · Juegos en Red · URJC</p>' +
   '<p>José Antonio Najarro Camacho<br>Víctor Martín Monterrubio<br>Daniel Heredia Naranjo</p>' +
@@ -141,16 +154,18 @@ document.querySelector("#volver").addEventListener("click", volverAlMenu);
 document.querySelector("#continuar").addEventListener("click", continuar);
 document.querySelector("#reiniciar").addEventListener("click", empezar);
 document.querySelector("#salir").addEventListener("click", volverAlMenu);
+document.querySelector("#repetir").addEventListener("click", empezar);
+document.querySelector("#menu-resultado").addEventListener("click", volverAlMenu);
 botonPausa.addEventListener("click", pausar);
 
-const controles = new Set(["KeyA", "KeyD", "KeyW", "ArrowLeft", "ArrowRight", "ArrowUp", "Escape"]);
+const controles = new Set(["KeyA", "KeyD", "KeyW", "KeyE", "ArrowLeft", "ArrowRight", "ArrowUp", "Enter", "NumpadEnter", "Escape"]);
 window.addEventListener("keydown", (evento) => {
   if (!controles.has(evento.code)) return;
-  if (escena === "jugando" || escena === "pausa") evento.preventDefault();
+  if (escena === "jugando" || (escena === "pausa" && evento.code === "Escape")) evento.preventDefault();
   if (evento.code === "Escape" && !evento.repeat) {
     if (escena === "jugando") pausar();
     else if (escena === "pausa") continuar();
-    else if (escena === "ajustes" || escena === "informacion") volverAlMenu();
+    else if (["ajustes", "informacion", "resultado"].includes(escena)) volverAlMenu();
     return;
   }
   if (escena !== "jugando") return;
@@ -173,47 +188,117 @@ function solapan(a, b) {
   return a.x < b.x + b.w && a.x + a.w > b.x && a.y < b.y + b.h && a.y + a.h > b.y;
 }
 
-function moverJugador(jugador, dt) {
+function limitar(valor, minimo, maximo) {
+  return Math.max(minimo, Math.min(valor, maximo));
+}
+
+function moverJugador(jugador, dt, solidos) {
   const sentido = Number(teclas.has(jugador.derecha)) - Number(teclas.has(jugador.izquierda));
-  jugador.vx = sentido * FISICA.velocidad;
+  const empujando = jugador === gael && jugador.enSuelo &&
+    (teclas.has("Enter") || teclas.has("NumpadEnter"));
+  jugador.vx = sentido * (empujando ? FISICA.empuje : FISICA.velocidad);
   if (sentido !== 0) jugador.direccion = sentido;
   if (pulsaciones.has(jugador.salto) && jugador.enSuelo) {
     jugador.vy = -FISICA.salto;
     jugador.enSuelo = false;
   }
 
-  // Resolver cada eje por separado evita atravesar paredes y plataformas.
-  jugador.x += jugador.vx * dt;
-  jugador.x = Math.max(0, Math.min(canvas.width - jugador.w, jugador.x));
-  for (const plataforma of plataformas) {
-    if (!solapan(jugador, plataforma)) continue;
-    if (jugador.vx > 0) jugador.x = plataforma.x - jugador.w;
-    else if (jugador.vx < 0) jugador.x = plataforma.x + plataforma.w;
+  // Resolver cada eje por separado evita atravesar los sólidos.
+  jugador.x = limitar(jugador.x + jugador.vx * dt, 0, canvas.width - jugador.w);
+  for (const solido of solidos) {
+    if (!solapan(jugador, solido)) continue;
+    if (sentido > 0) jugador.x = solido.x - jugador.w;
+    else if (sentido < 0) jugador.x = solido.x + solido.w;
+  }
+
+  if (sentido && solapan(jugador, caja)) {
+    const borde = sentido > 0 ? jugador.x + jugador.w : jugador.x - caja.w;
+    if (empujando && jugador.enSuelo) {
+      const x = limitar(borde, riel.inicio, riel.fin - caja.w);
+      if (!solapan(izan, { ...caja, x })) caja.x = x;
+    }
+    jugador.x = sentido > 0 ? caja.x - jugador.w : caja.x + caja.w;
   }
 
   jugador.vy += FISICA.gravedad * dt;
   jugador.y += jugador.vy * dt;
   jugador.enSuelo = false;
-  for (const plataforma of plataformas) {
-    if (!solapan(jugador, plataforma)) continue;
+  for (const solido of [...solidos, caja]) {
+    if (!solapan(jugador, solido)) continue;
     if (jugador.vy > 0) {
-      jugador.y = plataforma.y - jugador.h;
+      jugador.y = solido.y - jugador.h;
       jugador.enSuelo = true;
     } else if (jugador.vy < 0) {
-      jugador.y = plataforma.y + plataforma.h;
+      jugador.y = solido.y + solido.h;
     }
     jugador.vy = 0;
   }
 }
 
+function enSueloDeLaSala(jugador) {
+  return jugador.enSuelo && jugador.y + jugador.h === Y_SUELO;
+}
+
+function juntoAlTerminal() {
+  return izan.enSuelo && izan.y + izan.h === terminal.y + terminal.h &&
+    izan.x + izan.w > terminal.x - 9 && izan.x < terminal.x + terminal.w + 9;
+}
+
+function actualizarObjetivo() {
+  const mensaje = !terminal.activo
+    ? "Izan: sube a la primera plataforma y pulsa E junto al terminal."
+    : !placa.activa
+      ? "Gael: mantén Intro y empuja la caja hasta la placa amarilla."
+      : "Puerta abierta: dejad la caja en la placa y cruzad los dos.";
+  if (estadoTexto.textContent !== mensaje) estadoTexto.textContent = mensaje;
+}
+
+function formatearTiempo() {
+  const minutos = String(Math.floor(tiempo / 60)).padStart(2, "0");
+  const segundos = String(Math.floor(tiempo % 60)).padStart(2, "0");
+  return `${minutos}:${segundos}`;
+}
+
+function completarSala() {
+  puntos += PUNTOS_CARGUERO;
+  document.querySelector("#resumen-resultado").textContent =
+    `El Carguero Silente · ${formatearTiempo()} · ${puntos} puntos`;
+  cambiarEscena("resultado");
+  estadoTexto.textContent = "Los dos hermanos han llegado a la salida.";
+  document.querySelector("#repetir").focus();
+}
+
+function actualizarPuzle() {
+  if (pulsaciones.has("KeyE") && juntoAlTerminal()) terminal.activo = true;
+
+  const centroCaja = caja.x + caja.w / 2;
+  placa.activa = (centroCaja >= placa.x && centroCaja < placa.x + placa.w) ||
+    jugadores.some(j => enSueloDeLaSala(j) && j.x < placa.x + placa.w && j.x + j.w > placa.x);
+  const abierta = terminal.activo && placa.activa;
+  if (puerta.abierta && !abierta) {
+    // Al cerrarse, la puerta deja a cada jugador en el lado más cercano.
+    for (const j of jugadores) {
+      if (solapan(j, puerta)) {
+        j.x = j.x + j.w / 2 < puerta.x + puerta.w / 2 ? puerta.x - j.w : puerta.x + puerta.w;
+      }
+    }
+  }
+  puerta.abierta = abierta;
+
+  if (abierta && jugadores.every(j => enSueloDeLaSala(j) && j.x >= salida.x)) completarSala();
+  else actualizarObjetivo();
+}
+
 function actualizar(dt) {
   tiempo += dt;
-  for (const jugador of jugadores) moverJugador(jugador, dt);
+  const solidos = [...plataformas, marco];
+  if (!puerta.abierta) solidos.push(puerta);
+  for (const jugador of jugadores) moverJugador(jugador, dt, solidos);
+  actualizarPuzle();
   pulsaciones.clear();
 }
 
 // Fuente pixelart: cada dígito hexadecimal codifica una fila de cuatro píxeles.
-// Al dibujar sobre coordenadas enteras, no se amplían los bordes suavizados de fillText.
 const LETRAS_PIXEL = {
   A: "699F999", E: "F88E88F", G: "788B997", I: "E44444E",
   L: "888888F", M: "9FF9999", N: "9DDBB99", O: "6999996",
@@ -291,7 +376,6 @@ function dibujarNave() {
   bloque("#0b1026", 0, 0, 320, 180);
   bloque("#182139", 0, 27, 320, 135);
 
-  // Placas atornilladas, juntas oscuras y luces de la nave del boceto.
   for (let y = 43; y < 160; y += 30) {
     for (let x = 0; x < 320; x += 40) {
       bloque("#28334d", x + 1, y, 38, 28);
@@ -320,18 +404,65 @@ function dibujarNave() {
   }
 }
 
+function dibujarPuzle() {
+  const cian = terminal.activo ? "#36d1dc" : "#25808d";
+  const luzPlaca = placa.activa ? "#ffe66d" : "#a98a36";
+
+  bloque(puerta.abierta ? "#1d3843" : "#19243d", salida.x - 1, salida.y, salida.w + 1, salida.h);
+  for (let x = salida.x + 4; x < canvas.width; x += 8) {
+    bloque(puerta.abierta ? "#294a52" : "#202c44", x, salida.y + 2, 2, salida.h - 2);
+    bloque(puerta.abierta ? "#ffe66d" : "#655b42", x, 162, 4, 2);
+  }
+
+  bloque("#141c30", marco.x, marco.y, marco.w, marco.h);
+  bloque("#526077", marco.x + 2, marco.y, marco.w - 4, marco.h);
+  for (let y = marco.y + 7; y < puerta.y - 6; y += 12) {
+    bloque("#263249", marco.x + 4, y, marco.w - 8, 6);
+  }
+  bloque("#766339", puerta.x - 2, puerta.y - 3, puerta.w + 4, 3);
+  bloque(puerta.abierta ? "#79e4ac" : "#ff4d6d", puerta.x + 4, puerta.y - 5, 6, 2);
+  if (!puerta.abierta) {
+    bloque("#b4903f", puerta.x, puerta.y, puerta.w, puerta.h);
+    bloque("#e2bb56", puerta.x + 2, puerta.y, puerta.w - 4, puerta.h);
+    for (let y = puerta.y + 6; y < Y_SUELO; y += 8) {
+      bloque("#5c4a2e", puerta.x + 3, y, puerta.w - 6, 3);
+    }
+  }
+
+  bloque("#10192a", terminal.x, terminal.y, terminal.w, terminal.h);
+  bloque("#435674", terminal.x + 1, terminal.y + 1, terminal.w - 2, terminal.h - 1);
+  bloque("#0b1026", terminal.x + 3, terminal.y + 3, 10, 8);
+  bloque(cian, terminal.x + 4, terminal.y + 4, 8, 6);
+  bloque("#b3f7f4", terminal.x + 5, terminal.y + 5, 5, 1);
+  bloque("#19243d", terminal.x + 4, terminal.y + 13, 8, 5);
+  bloque(cian, terminal.x + 6, terminal.y + 14, 4, 2);
+  if (!terminal.activo) textoPixel("E", terminal.x + 6, terminal.y - 10, "#36d1dc");
+
+  bloque("#43495d", riel.inicio - 2, Y_SUELO - 3, 2, 3);
+  bloque("#43495d", riel.fin, Y_SUELO - 3, 2, 3);
+  bloque("#655633", placa.x, Y_SUELO - 3, placa.w, 3);
+  bloque(luzPlaca, placa.x + 1, Y_SUELO - 3, placa.w - 2, placa.activa ? 2 : 1);
+  bloque(luzPlaca, placa.x, Y_SUELO + 2, placa.w, 2);
+
+  const x = Math.round(caja.x);
+  bloque("#542e22", x, caja.y, caja.w, caja.h);
+  bloque("#d37a38", x + 1, caja.y + 1, caja.w - 2, caja.h - 2);
+  bloque("#ff9f43", x + 2, caja.y + 2, caja.w - 4, 2);
+  bloque("#7e462c", x + 3, caja.y + 5, caja.w - 6, 7);
+  bloque("#eda258", x + 4, caja.y + 7, caja.w - 8, 3);
+}
+
 function dibujarHUD() {
   bloque("#0b1026", 0, 0, 320, 23);
   bloque("#28334d", 0, 22, 320, 1);
-  const minutos = String(Math.floor(tiempo / 60)).padStart(2, "0");
-  const segundos = String(Math.floor(tiempo % 60)).padStart(2, "0");
-  const puntos = "PUNTOS  0000"; // Reservado para el sistema de puntuación.
-  textoPixel(`TIEMPO  ${minutos}:${segundos}`, 10, 8, "#e4edf4");
-  textoPixel(puntos, canvas.width - 10 - anchoTextoPixel(puntos), 8, "#ffe66d");
+  const marcador = `PUNTOS  ${String(puntos).padStart(4, "0")}`;
+  textoPixel(`TIEMPO  ${formatearTiempo()}`, 10, 8, "#e4edf4");
+  textoPixel(marcador, canvas.width - 10 - anchoTextoPixel(marcador), 8, "#ffe66d");
 }
 
 function dibujar() {
   dibujarNave();
+  dibujarPuzle();
   for (const jugador of jugadores) dibujarJugador(jugador);
   dibujarNombres();
   dibujarHUD();
@@ -342,12 +473,12 @@ function bucle(ahora) {
   anterior = ahora;
   if (escena === "jugando") {
     acumulado += delta;
-    while (acumulado >= FISICA.paso) {
-      actualizar(FISICA.paso);
+    while (escena === "jugando" && acumulado >= FISICA.paso) {
       acumulado -= FISICA.paso;
+      actualizar(FISICA.paso);
     }
   }
-  if (escena === "jugando" || escena === "pausa") dibujar();
+  if (["jugando", "pausa", "resultado"].includes(escena)) dibujar();
   requestAnimationFrame(bucle);
 }
 

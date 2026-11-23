@@ -15,7 +15,7 @@
     </header>
 
     <section class="pantalla" aria-label="Super Estrella">
-      <canvas id="juego" width="320" height="180" aria-label="Sala de plataformas para dos jugadores"></canvas>
+      <canvas id="juego" width="320" height="180" aria-label="Puzle cooperativo en El Carguero Silente"></canvas>
 
       <section id="menu" class="capa" aria-label="Menú principal">
         <img class="arte-menu" src="img/boceto_menu_principal.png" alt="">
@@ -50,12 +50,21 @@
         </label>
         <button id="volver-ajustes">Volver</button>
       </section>
+
+      <section id="resultado" class="capa" aria-labelledby="titulo-resultado" hidden>
+        <h2 id="titulo-resultado">SALA COMPLETADA</h2>
+        <p id="resumen-resultado"></p>
+        <div class="botones">
+          <button id="repetir">Volver a jugar</button>
+          <button id="menu-resultado">Volver al menú</button>
+        </div>
+      </section>
     </section>
 
     <footer class="pie">
       <div id="controles" class="controles">
-        <span><strong class="cian">Izan</strong> · A / D y W</span>
-        <span><strong class="naranja">Gael</strong> · ← / → y ↑</span>
+        <span><strong class="cian">Izan</strong> · A / D · W · E: terminal</span>
+        <span><strong class="naranja">Gael</strong> · ← / → · ↑ · Intro: empujar</span>
       </div>
       <button id="boton-pausa" disabled>Pausa · Esc</button>
     </footer>
