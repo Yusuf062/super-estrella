@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Super Estrella</title>
+  <link rel="stylesheet" href="estilos.css">
+  <script src="juego.js" defer></script>
+</head>
+<body>
+  <main class="contenedor">
+    <header class="cabecera">
+      <span>ÓRBITA TRES</span>
+      <span>SUPER ESTRELLA</span>
+    </header>
+
+    <section class="pantalla" aria-label="Super Estrella">
+      <canvas id="juego" width="320" height="180" aria-label="Sala de plataformas para dos jugadores"></canvas>
+
+      <section id="menu" class="capa" aria-label="Menú principal">
+        <img class="arte-menu" src="img/boceto_menu_principal.png" alt="">
+        <h1 class="solo-lectura">Super Estrella</h1>
+        <button id="jugar"><span class="solo-lectura">Jugar</span></button>
+        <button id="abrir-ajustes"><span class="solo-lectura">Ajustes</span></button>
+        <button id="ayuda"><span class="solo-lectura">Ayuda</span></button>
+        <button id="creditos"><span class="solo-lectura">Créditos</span></button>
+      </section>
+
+      <section id="pausa" class="capa" hidden>
+        <h2>PAUSA</h2>
+        <p>Tomad aire. La nave puede esperar.</p>
+        <div class="botones">
+          <button id="continuar">Continuar</button>
+          <button id="reiniciar">Reiniciar sala</button>
+          <button id="salir">Volver al menú</button>
+        </div>
+      </section>
+
+      <section id="informacion" class="capa" hidden>
+        <h2 id="titulo-informacion"></h2>
+        <div id="texto-informacion"></div>
+        <button id="volver">Volver</button>
+      </section>
+
+      <section id="ajustes" class="capa" hidden>
+        <h2>AJUSTES</h2>
+        <label class="opcion">
+          <input id="mostrar-controles" type="checkbox" checked>
+          Mostrar controles bajo el juego
+        </label>
+        <button id="volver-ajustes">Volver</button>
+      </section>
+    </section>
+
+    <footer class="pie">
+      <div id="controles" class="controles">
+        <span><strong class="cian">Izan</strong> · A / D y W</span>
+        <span><strong class="naranja">Gael</strong> · ← / → y ↑</span>
+      </div>
+      <button id="boton-pausa" disabled>Pausa · Esc</button>
+    </footer>
+    <p id="estado" class="estado" role="status" aria-live="polite">Dos jugadores en el mismo teclado.</p>
+  </main>
+</body>
+</html>
