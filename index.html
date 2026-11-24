@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Super Estrella</title>
   <link rel="stylesheet" href="estilos.css">
+  <script src="audio.js" defer></script>
   <script src="juego.js" defer></script>
 </head>
 <body>
@@ -44,11 +45,27 @@
 
       <section id="ajustes" class="capa" hidden>
         <h2>AJUSTES</h2>
+        <div class="volumenes">
+          <label for="volumen-musica">Música</label>
+          <input id="volumen-musica" type="range" min="0" max="100" value="45">
+          <output id="nivel-musica" for="volumen-musica">45 %</output>
+          <label for="volumen-efectos">Efectos</label>
+          <input id="volumen-efectos" type="range" min="0" max="100" value="70">
+          <output id="nivel-efectos" for="volumen-efectos">70 %</output>
+        </div>
+        <div class="asignaciones">
+          <fieldset><legend class="cian">Izan</legend><div id="teclas-izan"></div></fieldset>
+          <fieldset><legend class="naranja">Gael</legend><div id="teclas-gael"></div></fieldset>
+        </div>
+        <p id="aviso-ajustes" role="status"></p>
         <label class="opcion">
           <input id="mostrar-controles" type="checkbox" checked>
           Mostrar controles bajo el juego
         </label>
-        <button id="volver-ajustes">Volver</button>
+        <div class="acciones-ajustes">
+          <button id="restaurar-teclas">Restaurar teclas</button>
+          <button id="volver-ajustes">Volver</button>
+        </div>
       </section>
 
       <section id="resultado" class="capa" aria-labelledby="titulo-resultado" hidden>
@@ -64,9 +81,10 @@
 
     <footer class="pie">
       <div id="controles" class="controles">
-        <span><strong class="cian">Izan</strong> · A / D · W · E: terminal</span>
-        <span><strong class="naranja">Gael</strong> · ← / → · ↑ · Intro: empujar</span>
+        <span><strong class="cian">Izan</strong> · <span id="resumen-izan">A / D · W · E: terminal</span></span>
+        <span><strong class="naranja">Gael</strong> · <span id="resumen-gael">← / → · ↑ · Intro: empujar</span></span>
       </div>
+      <button id="activar-audio" hidden>Activar sonido</button>
       <button id="boton-pausa" disabled>Pausa · Esc</button>
     </footer>
     <p id="estado" class="estado" role="status" aria-live="polite">Dos jugadores en el mismo teclado.</p>

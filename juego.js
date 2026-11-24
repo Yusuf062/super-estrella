@@ -68,6 +68,20 @@ function crearJugador(nombre, x, color, izquierda, derecha, salto, archivo) {
 const izan = crearJugador("Izan", 29, "#36d1dc", "KeyA", "KeyD", "KeyW", "img/personaje_1.png");
 const gael = crearJugador("Gael", 49, "#ff9f43", "ArrowLeft", "ArrowRight", "ArrowUp", "img/personaje_2.png");
 const jugadores = [izan, gael];
+izan.accion = "KeyE";
+gael.accion = "Enter";
+const acciones = { izquierda: "Izquierda", derecha: "Derecha", salto: "Saltar", accion: "Interactuar" };
+const opcionesTecla = [
+  ...Array.from({ length: 26 }, (_, i) => "Key" + String.fromCharCode(65 + i)),
+  ...Array.from({ length: 10 }, (_, i) => "Digit" + i),
+  "ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Space", "Enter", "NumpadEnter",
+];
+const asignaciones = jugadores.flatMap(j => Object.keys(acciones)
+  .map(accion => ({ j, accion, original: j[accion] })));
+const avisoAjustes = document.querySelector("#aviso-ajustes");
+const volumenMusica = document.querySelector("#volumen-musica");
+const volumenEfectos = document.querySelector("#volumen-efectos");
+const claveAjustes = "super-estrella-ajustes";
 
 let escena = "menu";
 let nivel = "carguero";
@@ -75,6 +89,94 @@ let tiempo = 0;
 let puntos = 0;
 let acumulado = 0;
 let anterior = 0;
+
+function nombreTecla(codigo) {
+  const nombres = {
+    ArrowLeft: "←", ArrowRight: "→", ArrowUp: "↑", ArrowDown: "↓",
+    Space: "Espacio", Enter: "Intro", NumpadEnter: "Intro num.",
+  };
+  return nombres[codigo] ?? codigo.replace(/^(Key|Digit)/, "");
+}
+
+function leerAjustes() {
+  try {
+    return JSON.parse(localStorage.getItem(claveAjustes)) ?? {};
+  } catch {
+    return {};
+  }
+}
+
+function guardarAjustes() {
+  const datos = {
+    teclas: asignaciones.map(({ j, accion }) => j[accion]),
+    musica: Number(volumenMusica.value),
+    efectos: Number(volumenEfectos.value),
+    mostrar: mostrarControles.checked,
+  };
+  try {
+    localStorage.setItem(claveAjustes, JSON.stringify(datos));
+  } catch {
+    // Los ajustes siguen disponibles durante la sesión si el navegador bloquea el almacenamiento.
+  }
+}
+
+function actualizarVolumen() {
+  document.querySelector("#nivel-musica").textContent = `${volumenMusica.value} %`;
+  document.querySelector("#nivel-efectos").textContent = `${volumenEfectos.value} %`;
+  ajustarAudio(Number(volumenMusica.value) / 100, Number(volumenEfectos.value) / 100);
+}
+
+function resumirTeclas(j, accion) {
+  return `${nombreTecla(j.izquierda)} / ${nombreTecla(j.derecha)} · ${nombreTecla(j.salto)} · ${nombreTecla(j.accion)}: ${accion}`;
+}
+
+function actualizarControles() {
+  for (const { j, accion, select } of asignaciones) select.value = j[accion];
+  document.querySelector("#resumen-izan").textContent = resumirTeclas(izan, "terminal");
+  document.querySelector("#resumen-gael").textContent = resumirTeclas(gael, "empujar");
+  document.querySelector("#controles").hidden = !mostrarControles.checked;
+}
+
+function prepararAjustes() {
+  const datos = leerAjustes();
+  if (Array.isArray(datos.teclas) && datos.teclas.length === asignaciones.length &&
+      datos.teclas.every(codigo => opcionesTecla.includes(codigo)) &&
+      new Set(datos.teclas).size === asignaciones.length) {
+    asignaciones.forEach(({ j, accion }, i) => { j[accion] = datos.teclas[i]; });
+  }
+  if (Number.isFinite(datos.musica)) volumenMusica.value = limitar(datos.musica, 0, 100);
+  if (Number.isFinite(datos.efectos)) volumenEfectos.value = limitar(datos.efectos, 0, 100);
+  if (typeof datos.mostrar === "boolean") mostrarControles.checked = datos.mostrar;
+
+  for (const ajuste of asignaciones) {
+    const { j, accion } = ajuste;
+    const etiqueta = document.createElement("label");
+    const select = document.createElement("select");
+    etiqueta.textContent = acciones[accion];
+    for (const codigo of opcionesTecla) {
+      const opcion = document.createElement("option");
+      opcion.value = codigo;
+      opcion.textContent = nombreTecla(codigo);
+      select.append(opcion);
+    }
+    etiqueta.append(select);
+    document.querySelector(j === izan ? "#teclas-izan" : "#teclas-gael").append(etiqueta);
+    ajuste.select = select;
+    select.addEventListener("change", () => {
+      const ocupada = asignaciones.find(a => a !== ajuste && a.j[a.accion] === select.value);
+      if (ocupada) {
+        avisoAjustes.textContent = `Esa tecla ya la usa ${ocupada.j.nombre} para ${acciones[ocupada.accion].toLowerCase()}.`;
+      } else {
+        j[accion] = select.value;
+        avisoAjustes.textContent = "";
+        guardarAjustes();
+      }
+      actualizarControles();
+    });
+  }
+  actualizarVolumen();
+  actualizarControles();
+}
 
 function limpiarEntrada() {
   teclas.clear();
@@ -89,6 +191,8 @@ function cambiarEscena(nueva) {
     elemento.hidden = nombre !== nueva;
   }
   botonPausa.disabled = nueva !== "jugando";
+  if (nueva === "pausa" || nueva === "resultado") pausarAudio();
+  actualizarMusica(nueva);
 }
 
 function reiniciarSala() {
@@ -164,22 +268,38 @@ function volverAlMenu() {
 }
 
 document.querySelector("#jugar").addEventListener("click", empezar);
+botonAudio.addEventListener("click", () => activarAudio(escena));
+document.addEventListener("click", () => {
+  if (!audioActivado) activarAudio(escena);
+});
 abrirDesdeMenu("#abrir-ajustes", () => {
   cambiarEscena("ajustes");
-  mostrarControles.focus();
+  avisoAjustes.textContent = "";
+  volumenMusica.focus();
 });
 mostrarControles.addEventListener("change", () => {
-  document.querySelector("#controles").hidden = !mostrarControles.checked;
+  actualizarControles();
+  guardarAjustes();
+});
+document.querySelector("#restaurar-teclas").addEventListener("click", () => {
+  for (const { j, accion, original } of asignaciones) j[accion] = original;
+  actualizarControles();
+  guardarAjustes();
+  avisoAjustes.textContent = "Teclas originales restauradas.";
+});
+for (const control of [volumenMusica, volumenEfectos]) control.addEventListener("input", () => {
+  actualizarVolumen();
+  guardarAjustes();
 });
 document.querySelector("#volver-ajustes").addEventListener("click", volverAlMenu);
 abrirDesdeMenu("#ayuda", () => mostrarInformacion("CÓMO JUGAR",
-  '<p><strong class="cian">Izan:</strong> A y D para moverse, W para saltar y E junto al terminal.</p>' +
-  '<p><strong class="naranja">Gael:</strong> ← y → para moverse, ↑ para saltar. Mantén Intro mientras andas hacia la caja.</p>' +
-  '<p>En el Carguero, enciende el terminal y deja la caja sobre la placa. En Helix, cruzad en la plataforma móvil y saltad en la zona violeta. Esc abre la pausa.</p>'));
+  `<p><strong class="cian">Izan:</strong> ${resumirTeclas(izan, "terminal")}.</p>` +
+  `<p><strong class="naranja">Gael:</strong> ${resumirTeclas(gael, "empujar")}.</p>` +
+  `<p>En el Carguero, activad el terminal y empujad la caja a la placa manteniendo ${nombreTecla(gael.accion)}. En Helix, cruzad en la plataforma móvil y saltad en la zona violeta. Esc abre la pausa.</p>`));
 abrirDesdeMenu("#creditos", () => mostrarInformacion("ÓRBITA TRES",
   '<img class="logo" src="img/logo.png" alt="Super Estrella"><p>Grupo J · Juegos en Red · URJC</p>' +
   '<p>José Antonio Najarro Camacho<br>Víctor Martín Monterrubio<br>Daniel Heredia Naranjo</p>' +
-  '<p>Super Estrella · Código bajo licencia Apache 2.0.</p>'));
+  '<p>Música: Out in Space, de Agecaf (CC0).<br>Código: Apache 2.0.</p>'));
 document.querySelector("#volver").addEventListener("click", volverAlMenu);
 document.querySelector("#continuar").addEventListener("click", continuar);
 document.querySelector("#reiniciar").addEventListener("click", entrarEnSala);
@@ -189,9 +309,9 @@ botonSiguiente.addEventListener("click", entrarEnHelix);
 document.querySelector("#menu-resultado").addEventListener("click", volverAlMenu);
 botonPausa.addEventListener("click", pausar);
 
-const controles = new Set(["KeyA", "KeyD", "KeyW", "KeyE", "ArrowLeft", "ArrowRight", "ArrowUp", "Enter", "NumpadEnter", "Escape"]);
 window.addEventListener("keydown", (evento) => {
-  if (!controles.has(evento.code)) return;
+  if (evento.ctrlKey || evento.altKey || evento.metaKey) return;
+  if (!["Escape", ...asignaciones.map(({ j, accion }) => j[accion])].includes(evento.code)) return;
   if (escena === "jugando" || (escena === "pausa" && evento.code === "Escape")) evento.preventDefault();
   if (evento.code === "Escape" && !evento.repeat) {
     if (escena === "jugando") pausar();
@@ -200,6 +320,7 @@ window.addEventListener("keydown", (evento) => {
     return;
   }
   if (escena !== "jugando") return;
+  if (!audioActivado) activarAudio(escena);
   if (!teclas.has(evento.code)) pulsaciones.add(evento.code);
   teclas.add(evento.code);
 });
@@ -210,9 +331,10 @@ window.addEventListener("blur", () => {
 });
 document.addEventListener("visibilitychange", () => {
   if (document.hidden) {
+    pausarAudio();
     limpiarEntrada();
     pausar();
-  }
+  } else actualizarMusica(escena);
 });
 
 function solapan(a, b) {
@@ -226,12 +348,13 @@ function limitar(valor, minimo, maximo) {
 function moverJugador(jugador, dt, solidos) {
   const sentido = Number(teclas.has(jugador.derecha)) - Number(teclas.has(jugador.izquierda));
   const empujando = nivel === "carguero" && jugador === gael && jugador.enSuelo &&
-    (teclas.has("Enter") || teclas.has("NumpadEnter"));
+    teclas.has(gael.accion);
   jugador.vx = sentido * (empujando ? FISICA.empuje : FISICA.velocidad);
   if (sentido !== 0) jugador.direccion = sentido;
   if (pulsaciones.has(jugador.salto) && jugador.enSuelo) {
     jugador.vy = -FISICA.salto;
     jugador.enSuelo = false;
+    sonar("salto");
   }
 
   // Resolver cada eje por separado evita atravesar los sólidos.
@@ -292,9 +415,9 @@ function actualizarObjetivo() {
     return;
   }
   const mensaje = !terminal.activo
-    ? "Izan: sube a la primera plataforma y pulsa E junto al terminal."
+    ? `Izan: sube a la primera plataforma y pulsa ${nombreTecla(izan.accion)} junto al terminal.`
     : !placa.activa
-      ? "Gael: mantén Intro y empuja la caja hasta la placa amarilla."
+      ? `Gael: mantén ${nombreTecla(gael.accion)} y empuja la caja hasta la placa amarilla.`
       : "Puerta abierta: dejad la caja en la placa y cruzad los dos.";
   if (estadoTexto.textContent !== mensaje) estadoTexto.textContent = mensaje;
 }
@@ -309,7 +432,7 @@ function completarSala() {
   const quedaHelix = nivel === "carguero";
   puntos += PUNTOS_NIVEL;
   document.querySelector("#titulo-resultado").textContent = quedaHelix
-    ? "CARGUERO COMPLETADO" : "LABORATORIO COMPLETADO";
+    ? "CARGUERO COMPLETADO" : "DEMO COMPLETADA";
   document.querySelector("#resumen-resultado").textContent =
     `Tiempo total: ${formatearTiempo()} · ${puntos} puntos`;
   botonSiguiente.hidden = !quedaHelix;
@@ -317,12 +440,15 @@ function completarSala() {
   cambiarEscena("resultado");
   estadoTexto.textContent = quedaHelix
     ? "Una señal de Oris apunta al Laboratorio Helix."
-    : "Los dos hermanos descubren que Oris está conectado a un sistema de control.";
+    : "Izan y Gael han completado la demo y descubierto qué le ocurrió a Oris.";
   (quedaHelix ? botonSiguiente : botonRepetir).focus();
 }
 
 function actualizarPuzle() {
-  if (pulsaciones.has("KeyE") && juntoAlTerminal()) terminal.activo = true;
+  if (!terminal.activo && pulsaciones.has(izan.accion) && juntoAlTerminal()) {
+    terminal.activo = true;
+    sonar("terminal");
+  }
 
   const centroCaja = caja.x + caja.w / 2;
   placa.activa = (centroCaja >= placa.x && centroCaja < placa.x + placa.w) ||
@@ -336,6 +462,7 @@ function actualizarPuzle() {
       }
     }
   }
+  if (abierta !== puerta.abierta) sonar("puerta");
   puerta.abierta = abierta;
 
   if (abierta && jugadores.every(j => enSueloDeLaSala(j) && j.x >= salida.x)) completarSala();
@@ -527,7 +654,6 @@ function dibujarPuzle() {
   bloque("#b3f7f4", terminal.x + 5, terminal.y + 5, 5, 1);
   bloque("#19243d", terminal.x + 4, terminal.y + 13, 8, 5);
   bloque(cian, terminal.x + 6, terminal.y + 14, 4, 2);
-  if (!terminal.activo) textoPixel("E", terminal.x + 6, terminal.y - 10, "#36d1dc");
 
   bloque("#43495d", riel.inicio - 2, Y_SUELO - 3, 2, 3);
   bloque("#43495d", riel.fin, Y_SUELO - 3, 2, 3);
@@ -619,5 +745,6 @@ function bucle(ahora) {
   requestAnimationFrame(bucle);
 }
 
+prepararAjustes();
 cambiarEscena("menu");
 requestAnimationFrame(bucle);
