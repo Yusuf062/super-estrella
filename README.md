@@ -10,11 +10,28 @@
 
 ## Descripción del juego
 
-Super Estrella es un videojuego cooperativo de plataformas y puzles en 2D para dos jugadores. Sus protagonistas son dos hermanos que recorren diferentes naves espaciales para descubrir qué ocurrió con su padre.
+**Super Estrella** es un juego cooperativo de plataformas y puzles en 2D. Los hermanos Izan y Gael siguen una señal por varias naves espaciales para averiguar qué le ocurrió a su padre, el comandante Oris.
 
-Cada hermano cuenta con habilidades distintas: uno puede manipular sistemas tecnológicos y el otro mover objetos pesados y abrir caminos. Ambos deberán coordinarse para resolver puzles, superar obstáculos y alcanzar el enfrentamiento final contra su padre.
+## Demo local · Fase 2
 
-La versión final permitirá jugar desde dos ordenadores conectados en red y en tiempo real.
+La demo se juega entre **dos personas en el mismo ordenador y con un solo teclado**. Está hecha con HTML, CSS, JavaScript y Canvas 2D.
+
+1. Descarga el repositorio desde **Code → Download ZIP** y descomprímelo.
+2. Abre `index.html` en el navegador y pulsa **Jugar**. No hace falta instalar dependencias ni arrancar un servidor.
+3. Si quieres oír la música del menú antes de jugar, pulsa **Activar sonido**.
+
+| Acción | Izan | Gael |
+| :--- | :---: | :---: |
+| Moverse | `A` / `D` | `←` / `→` |
+| Saltar | `W` | `↑` |
+| Habilidad | `E` junto al terminal | Mantener `Intro` y andar hacia la caja |
+
+**Esc** abre la pausa y permite reanudar la partida. Desde la pausa se puede reiniciar el nivel actual o volver al menú. En **Ajustes** se pueden cambiar las teclas, restaurar los controles originales y regular por separado el volumen de la música y los efectos.
+
+- **El Carguero Silente:** Izan activa el terminal y Gael empuja una caja hasta la placa de presión. Con el terminal y la placa activos se abre la compuerta; los dos hermanos tienen que cruzarla.
+- **Laboratorio Helix:** los dos usan una plataforma móvil para cruzar el hueco y aprovechan la zona violeta de gravedad reducida para alcanzar la salida elevada.
+
+La demo termina en Helix con una pantalla de tiempo y puntos. Cada nivel completado suma **1.000 puntos**. Si uno cae en Helix, ambos reaparecen al inicio de ese nivel y pierden **50 puntos**, con un mínimo de cero.
 
 ## Equipo de desarrollo
 
@@ -45,12 +62,14 @@ El concepto, las mecánicas, la narrativa y el diseño audiovisual se describen 
 | Fase | Contenido | Estado |
 | :--- | :--- | :--- |
 | Fase 1 | Equipo, concepto y documento de diseño | Entregada |
-| Fase 2 | Desarrollo del juego en local | Pendiente |
+| Fase 2 | Demo jugable en local: El Carguero Silente y Laboratorio Helix | Implementada |
 | Fase 3 | Comunicación cliente-servidor mediante API REST | Pendiente |
 | Fase 4 | Multijugador en tiempo real mediante WebSockets | Pendiente |
 
-## Repositorio y licencia
+## Audio y licencia
 
-**Repositorio:** https://github.com/Yusuf062/super-estrella
+**Música:** [Out in Space](https://opengameart.org/content/out-in-space-0), de Agecaf, bajo licencia CC0. Se utilizan `Out in Space Menu.ogg` para el menú y `Out in Space.ogg` para la partida.
 
-El código del proyecto se distribuirá bajo la **[licencia Apache 2.0](LICENSE)**. Los recursos de terceros conservarán sus respectivas licencias y atribuciones.
+La demo incluye efectos para el salto, el terminal y la compuerta. Los archivos de audio están en [`audio/`](audio/).
+
+El código del proyecto se distribuye bajo la **[licencia Apache 2.0](LICENSE)**. Los recursos de terceros conservan sus propias licencias.

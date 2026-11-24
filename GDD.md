@@ -3,7 +3,8 @@
 [Volver al README](README.md)
 
 **Juegos en Red · Grado en Diseño y Desarrollo de Videojuegos · URJC · Curso 2026/27**  
-**Grupo J · Órbita Tres**
+**Grupo J · Órbita Tres**  
+**Versión del documento: Fase 2 · Demo local**
 
 **Repositorio:** https://github.com/Yusuf062/super-estrella
 
@@ -27,11 +28,9 @@
 
 ## 1. Introducción
 
-**Super Estrella** es un juego cooperativo de plataformas y puzles en 2D. Dos jugadores controlan a los hermanos Izan y Gael, que recorren tres naves espaciales para encontrar a su padre, el comandante Oris.
+**Super Estrella** es un juego cooperativo de plataformas y puzles en 2D. Izan y Gael siguen una señal por varias naves espaciales para encontrar a su padre, el comandante Oris. Izan activa terminales y Gael empuja cajas pesadas. Los dos deben coordinarse y alcanzar juntos la salida.
 
-Izan activa terminales tecnológicos y Gael empuja cajas pesadas. Deben combinar sus habilidades para abrir puertas, superar obstáculos y alcanzar juntos la salida. La aventura termina con un enfrentamiento contra su padre, planteado como un puzle cooperativo que utiliza las mecánicas aprendidas durante los niveles.
-
-La cooperación es el centro del juego: ninguno de los hermanos puede completar los niveles solo. Se plantea una aventura corta y viable para un equipo de tres integrantes.
+La **demo de la Fase 2** funciona en local e incluye **El Carguero Silente** y **Laboratorio Helix**. La Vigilia y el rescate de Oris forman parte del diseño de la aventura completa.
 
 ## 2. Especificaciones básicas
 
@@ -42,73 +41,62 @@ La cooperación es el centro del juego: ninguno de los hermanos puede completar 
 | Jugadores | Dos, con acciones simultáneas y cooperación en tiempo real |
 | Público objetivo | Jugadores de 10 años en adelante interesados en jugar con amigos o familiares |
 | Plataforma | Navegador web para ordenador |
-| Tecnología prevista | Phaser 3, HTML, CSS y JavaScript |
+| Tecnología de la demo | HTML, CSS, JavaScript y Canvas 2D |
 | Representación | 2D, vista lateral |
-| Alcance | Tres niveles cortos; el enfrentamiento final forma parte del tercero |
-| Duración | Se ajustará mediante pruebas de resolución de los puzles |
+| Alcance de la Fase 2 | Dos niveles cortos, con una sala jugable por nivel |
 | Idioma | Castellano |
 | Licencia del código | Apache 2.0 |
 
-Primero se desarrollará una versión local para dos jugadores en el mismo teclado. En las fases siguientes se incorporarán la comunicación mediante API REST y el juego desde dos ordenadores mediante WebSockets.
+La demo se abre desde `index.html` en el navegador. Dos jugadores comparten teclado y usan el ratón para los menús. La conexión mediante API REST y WebSockets queda para las siguientes fases.
 
 ## 3. Jugabilidad
 
 ### 3.1. Objetivo y ciclo de juego
 
-Los jugadores deben resolver los puzles de cada sala y llegar juntos a la compuerta de salida. La progresión es lineal: completan una nave y pasan a la siguiente. Ganan de forma conjunta al desactivar el sistema que controla a Oris.
-
-En cada sala observan los obstáculos, reparten las acciones según las habilidades de sus personajes y ejecutan el puzle para abrir el camino. Un hermano debe facilitar el paso del otro, combinando saltos e interacciones.
+En el Carguero, los hermanos combinan sus habilidades para desbloquear la compuerta. En Helix, cruzan un hueco y llegan a una salida elevada. En los dos niveles deben llegar juntos a la salida. Al completar Helix se muestran el tiempo y los puntos de la demo.
 
 ### 3.2. Controles
 
-| Acción | Jugador 1 / cada cliente en red | Jugador 2 en modo local |
+| Acción | Izan | Gael |
 | :--- | :---: | :---: |
 | Moverse | `A` y `D` | Flechas izquierda y derecha |
 | Saltar | `W` | Flecha arriba |
-| Interactuar | `E` | `Intro` |
+| Interactuar | `E` junto al terminal | Mantener `Intro` y andar hacia la caja |
 | Reiniciar sala | Botón de la interfaz | Botón de la interfaz |
 | Abrir pausa | `Esc` | `Esc` |
 
-El ratón se utiliza para los botones de menús, ajustes y resultados. En red, cada jugador controla únicamente a su personaje.
+Estos son los controles por defecto. En Ajustes se pueden cambiar las teclas de ambos personajes, restaurar las originales y ocultar o mostrar el recordatorio bajo la pantalla.
 
 ### 3.3. Mecánicas principales
 
-- **Movimiento:** desplazamiento horizontal y salto sobre plataformas fijas o móviles.
-- **Izan:** activa terminales para abrir determinadas puertas o desactivar láseres.
-- **Gael:** empuja cajas pesadas manteniendo la interacción y moviéndose hacia ellas.
-- **Placas de presión:** permanecen activas mientras un personaje o una caja está encima. Algunas puertas requieren dos placas activas a la vez.
-- **Gravedad reducida:** las zonas señalizadas permiten saltar más alto y caer más despacio. Afectan a los personajes, no a las cajas.
-- **Peligros:** tocar un láser o caer al vacío hace que ambos reaparezcan en el último punto de control.
-- **Puntos de control:** se activan al completar determinadas salas. Al reaparecer se restablecen las cajas y mecanismos del tramo para evitar bloqueos.
-- **Salida compartida:** solo permite avanzar cuando están presentes ambos hermanos.
+- **Izan:** se acerca al terminal de la primera plataforma y lo activa. El terminal queda encendido hasta reiniciar el Carguero.
+- **Gael:** empuja la caja manteniendo la tecla de interacción y moviéndose hacia ella.
+- **Placa de presión:** se activa mientras tiene una caja o un personaje encima. La compuerta requiere también el terminal encendido. Dejar la caja sobre la placa permite que pasen los dos.
+- **Plataforma móvil:** va de un lado al otro del hueco de Helix y transporta a quienes están apoyados en ella.
+- **Gravedad reducida:** en la zona violeta de Helix, los personajes saltan más alto y caen más despacio.
+- **Caída y reaparición:** si uno cae al vacío en Helix, los dos reaparecen al principio de ese nivel. El tiempo acumulado se mantiene.
 
 ### 3.4. Físicas y dificultad
 
-Se utilizarán gravedad, salto y colisiones con suelos, paredes y objetos. Las cajas se desplazarán horizontalmente y caerán sobre las superficies. Las plataformas móviles seguirán rutas fijas y transportarán a los personajes.
-
-La dificultad aumenta al combinar mecanismos conocidos: abrir una puerta, mantener una placa con una caja y coordinar esas acciones mientras se esquivan peligros. La gravedad reducida modifica los saltos sin añadir controles nuevos. Los láseres temporizados mostrarán una señal antes de activarse.
+Los personajes tienen gravedad, salto y colisiones con suelos, plataformas y objetos. La caja del Carguero se desplaza horizontalmente sobre el suelo. En Helix, los personajes pueden saltar desde abajo a la plataforma móvil y al balcón de salida. El primer nivel presenta un puzle de coordinación; el segundo añade saltos con una plataforma en movimiento y una zona de gravedad reducida.
 
 ### 3.5. Niveles y escenarios
 
-| Nivel | Escenario y contenido |
-| :--- | :--- |
-| 1. El Carguero Silente | Almacén espacial. Introduce saltos, terminales, cajas y puertas. Los hermanos reciben una señal de Oris. |
-| 2. Laboratorio Helix | Laboratorio con plataformas móviles y zonas de gravedad reducida. Descubren que su padre está conectado a un sistema de control. |
-| 3. La Vigilia | Nave capitana. Combina las mecánicas anteriores con láseres y termina con el rescate de Oris en el puente de mando. |
+| Nivel | Estado | Contenido |
+| :--- | :--- | :--- |
+| El Carguero Silente | Jugable en Fase 2 | Terminal, caja, placa de presión y compuerta compartida. Al salir, los hermanos reciben una señal que apunta a Helix. |
+| Laboratorio Helix | Jugable en Fase 2 | Plataforma móvil, hueco y zona de gravedad reducida. Al salir, los hermanos descubren qué ocurrió con Oris y concluye la demo. |
+| La Vigilia | Diseño de la aventura completa | Nave capitana con láseres temporizados y el puzle de rescate de Oris. |
 
-Cada nivel tendrá pocas salas, con cámara fija y distribución legible. Las cajas necesarias no se colocarán junto a zonas donde puedan perderse sin posibilidad de reinicio.
+### 3.6. Enfrentamiento final previsto
 
-**Ejemplo de puzle:** Gael coloca una caja sobre una placa para que Izan cruce una puerta. Desde el otro lado, Izan activa un terminal que permite pasar a Gael. Ambos alcanzan juntos la salida.
-
-### 3.6. Enfrentamiento final
-
-Oris permanece conectado al núcleo de la nave. Para liberarlo, los hermanos deben desactivar tres mecanismos: Gael coloca cajas sobre placas que permiten acceder a los terminales de Izan, mientras ambos esquivan láseres con patrones repetitivos.
+En la aventura completa, Oris permanece conectado al núcleo de la nave. Para liberarlo, los hermanos deben desactivar tres mecanismos: Gael coloca cajas sobre placas que permiten acceder a los terminales de Izan, mientras ambos esquivan láseres con patrones repetitivos.
 
 Cada mecanismo desactivado queda registrado como punto de control. Al completar los tres se apaga el núcleo y ambos ganan. No se necesita un sistema de armas o ataques de los protagonistas.
 
 ### 3.7. Puntuación
 
-La puntuación es conjunta: 1.000 puntos por completar cada nivel y una penalización de 50 por cada reinicio debido a una muerte, sin bajar de cero. Los resultados muestran el tiempo total y los puntos, permitiendo repetir la aventura para mejorar.
+La puntuación es conjunta. Cada nivel completado suma **1.000 puntos**. Cada caída en Helix resta **50 puntos**, con un mínimo de cero. El tiempo y la puntuación se mantienen al pasar del Carguero a Helix. Al final de la demo se puede repetir desde el primer nivel o volver al menú.
 
 ## 4. Narrativa
 
@@ -118,7 +106,7 @@ El comandante Oris desapareció durante una expedición que investigaba la energ
 
 Izan y Gael siguen la señal por una flota. Al principio creen que su padre se ha convertido en su comandante enemigo, pero los mensajes encontrados entre niveles revelan que está conectado a un sistema que altera su voluntad.
 
-Al llegar al puente de mando, Oris intenta impedirles el paso. Los hermanos desactivan el núcleo, lo liberan y escapan juntos. La historia se presenta mediante textos breves al comenzar o terminar cada nivel, sin escenas cinematográficas complejas ni voces grabadas.
+La demo muestra el avance de la historia con textos breves en las pantallas de resultado. En la aventura completa, los hermanos llegarían al puente de mando, desactivarían el núcleo y liberarían a Oris.
 
 ### 4.2. Personajes
 
@@ -128,7 +116,7 @@ Al llegar al puente de mando, Oris intenta impedirles el paso. Los hermanos desa
 | Gael, 18 años | Impulsivo y protector. Quiere recuperar a su familia. Empuja cajas y aprende a actuar con paciencia. |
 | Oris | Antiguo comandante y padre de los protagonistas. Intenta resistirse al sistema de control. Su rescate resuelve el conflicto familiar. |
 
-Los rasgos de los hermanos se reflejan en pequeños intercambios de diálogo y en la necesidad de ayudarse.
+Las habilidades distintas de los hermanos refuerzan la necesidad de ayudarse.
 
 ## 5. Imagen y diseño visual
 
@@ -143,8 +131,8 @@ El logotipo utiliza letras rojas inclinadas con la palabra «SUPER», un aro roj
 ### 5.2. Aspectos técnicos
 
 - **Cámara:** representación lateral en 2D, con cámara fija que muestra toda la sala.
-- **Resolución:** pantallas sobre una cuadrícula de 320 x 180 píxeles, ampliadas sin suavizado a 1280 x 720, en formato panorámico 16:9.
-- **Personajes:** cuadrícula de 32 x 32 píxeles y animaciones breves.
+- **Resolución:** Canvas de 320 × 180 píxeles, escalado sin suavizado y con proporción 16:9.
+- **Personajes:** sprites dibujados a 32 × 32 píxeles que cambian de orientación según el movimiento.
 
 ### 5.3. Estilo visual y colores
 
@@ -152,14 +140,14 @@ El juego utilizará arte de píxeles sencillo, con formas claras y una estética
 
 - Los fondos de las naves tendrán tonos azules oscuros y grises, para que las plataformas y objetos destaquen sobre la decoración.
 - Izan y los terminales utilizarán tonos cian; Gael y las cajas, tonos naranjas. Así se identificará qué personaje puede interactuar con cada elemento.
-- Los láseres y peligros se señalarán en rojo, mientras que las salidas y puntos de control destacarán en amarillo.
+- Las salidas y la placa destacan en amarillo. El violeta identifica la zona de gravedad reducida de Helix.
 - Se podrán utilizar tonos más claros u oscuros para luces y sombras, además de colores de piel, pelo y detalles. Las formas e iconos complementarán el uso de colores.
 
 ### 5.4. Inspiración y bocetos
 
 **Fireboy and Watergirl** inspira los puzles con habilidades complementarias y salas compartidas [1]. **Star Wars** sirve como referencia para la aventura espacial y el conflicto familiar, con personajes y escenarios propios [2].
 
-Los siguientes bocetos digitales muestran los hermanos, el padre, el menú y una sala de ejemplo. Sus formas y colores se colocan sobre una cuadrícula de píxeles uniforme. Son propuestas visuales para la Fase 1; los recursos finales se adaptarán durante el desarrollo.
+Los siguientes bocetos digitales muestran los hermanos, el padre, el menú y una sala de ejemplo. Sus formas y colores se colocan sobre una cuadrícula de píxeles uniforme. Son referencias visuales de la Fase 1. La demo reutiliza los sprites de los hermanos y la imagen del menú principal. El boceto de sala incluye un láser como referencia para la aventura completa.
 
 #### Personajes
 
@@ -179,47 +167,40 @@ La sala ilustra las plataformas, el terminal de Izan, la caja de Gael, una placa
 
 ## 6. Sonido
 
-La música del menú será electrónica y tranquila, con ambiente espacial. En los niveles se utilizará una pista ambiental suave y en el enfrentamiento final una más intensa. Un sonido breve indicará la victoria.
+La demo usa dos temas distintos en bucle: **Out in Space Menu** para el menú y **Out in Space** durante la partida. Ambos son de Agecaf y están disponibles bajo licencia CC0 en [OpenGameArt](https://opengameart.org/content/out-in-space-0).
 
-Los efectos cubrirán saltos, empuje de cajas, terminales, placas, puertas, muerte y botones de interfaz. Los avisos importantes tendrán una señal visual equivalente. Los ajustes permitirán modificar por separado música y efectos.
-
-Se utilizarán recursos propios o de terceros con licencia compatible. Antes de incorporar cada recurso externo se registrarán su autor, enlace y licencia en los créditos.
+Hay efectos de salto, activación del terminal y apertura o cierre de la compuerta. Desde Ajustes se regula por separado el volumen de música y efectos. Para oír la música antes de iniciar la partida, se pulsa **Activar sonido** en el menú.
 
 ## 7. Interfaz y diagrama de flujo
 
 ### 7.1. Pantallas
 
-- **Menú:** logo y botones Jugar, Ajustes, Ayuda y Créditos. En las fases de red mostrará la conexión al servidor y los usuarios conectados.
-- **Sala de espera:** en red, espera a dos jugadores con personajes diferentes. En local se comienza directamente.
-- **Partida:** sala completa, personajes, tiempo, puntuación e indicaciones de interacción.
-- **Pausa:** continuar o salir. En red se compartirá el estado de pausa entre ambos jugadores.
-- **Resultados:** tiempo, puntos y botones Repetir y Menú.
-- **Ayuda, ajustes y créditos:** controles y habilidades, volumen y autores respectivamente.
-
-Si se desconecta un jugador, termina la partida y se informa al compañero. Si cae el servidor, se muestra un aviso que bloquea las acciones y comprueba la conexión hasta recuperarla.
+- **Menú principal:** Jugar, Ajustes, Ayuda y Créditos.
+- **Partida:** cámara fija, tiempo, puntos e indicaciones del objetivo.
+- **Pausa:** continuar, reiniciar el nivel actual o volver al menú.
+- **Resultados:** al completar el Carguero se puede continuar a Helix. Al completar Helix se puede repetir la demo o volver al menú. Ambas pantallas muestran el tiempo y los puntos acumulados.
+- **Ajustes:** volumen de música y efectos, teclas por personaje y visibilidad de los controles.
+- **Ayuda y créditos:** controles vigentes, objetivo y autores.
 
 ### 7.2. Diagrama de flujo
 
 ```mermaid
 flowchart TD
-    M[Menú principal] --> J{Modo}
-    M --> O[Ajustes, ayuda y créditos]
+    M["Menú principal"] -->|Jugar| C["El Carguero Silente"]
+    M --> O["Ajustes, ayuda y créditos"]
     O --> M
-    J -->|Local| P[Partida: nivel y sala actuales]
-    J -->|En red| E[Sala de espera]
-    E -->|Dos jugadores| P
-    P -->|Sala completada| C{Final de aventura}
-    C -->|No: siguiente sala o nave| P
-    C -->|Sí| R[Resultados]
-    P -->|Muerte: punto de control| P
-    P -->|Esc| A[Pausa]
-    A -->|Continuar| P
-    A -->|Salir| M
-    R -->|Repetir| J
-    R -->|Salir| M
+    C -->|Los dos cruzan| RC["Carguero completado"]
+    RC -->|Continuar| H["Laboratorio Helix"]
+    H -->|Caída: reaparecen los dos| H
+    H -->|Los dos llegan a la salida| R["Demo completada: tiempo y puntos"]
+    R -->|Repetir| C
+    R -->|Volver al menú| M
+    RC -->|Volver al menú| M
+    C -->|Esc| P["Pausa"]
+    H -->|Esc| P
+    P -->|Continuar o reiniciar| N["Nivel actual"]
+    P -->|Volver al menú| M
 ```
-
-Las desconexiones interrumpen este flujo y llevan al aviso correspondiente. El reinicio conserva el progreso anterior al último punto de control.
 
 ## 8. Comunicación y marketing
 
@@ -233,4 +214,4 @@ Se compartirán capturas y vídeos cortos de puzles cooperativos en redes social
 
 [2] *Star Wars*. Saga cinematográfica de Lucasfilm. Referencia de ambientación espacial y conflicto familiar.
 
-Los recursos gráficos y sonoros externos se añadirán con sus atribuciones cuando se seleccionen.
+[3] Agecaf. [*Out in Space*](https://opengameart.org/content/out-in-space-0). Música del menú y de la partida, licencia CC0.
