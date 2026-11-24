@@ -14,11 +14,14 @@ const capas = {
 const estadoTexto = document.querySelector("#estado");
 const botonPausa = document.querySelector("#boton-pausa");
 const mostrarControles = document.querySelector("#mostrar-controles");
+const botonSiguiente = document.querySelector("#siguiente");
+const botonRepetir = document.querySelector("#repetir");
 const teclas = new Set();
 const pulsaciones = new Set();
 
 const FISICA = {
   gravedad: 420,
+  gravedadHelix: 195,
   velocidad: 62,
   empuje: 42,
   salto: 170,
@@ -39,7 +42,19 @@ const placa = { x: 216, w: 23, activa: false };
 const marco = { x: 263, y: 40, w: 14, h: 76 };
 const puerta = { x: 263, y: 116, w: 14, h: Y_SUELO - 116, abierta: false };
 const salida = { x: 278, y: 116, w: 42, h: Y_SUELO - 116 };
-const PUNTOS_CARGUERO = 1000;
+const suelosHelix = [
+  { x: 0, y: Y_SUELO, w: 118, h: 20 },
+  { x: 206, y: Y_SUELO, w: 114, h: 20 },
+  { x: 270, y: 96, w: 50, h: 6, soloDesdeArriba: true },
+];
+const plataformaMovil = {
+  x: 84, y: 130, w: 40, h: 5, soloDesdeArriba: true,
+  inicio: 84, fin: 214, velocidad: 36, direccion: 1, espera: 1,
+};
+const zonaGravedad = { x: 242, y: 26, w: 78, h: 134 };
+const salidaHelix = { x: 281, y: 96 };
+const PUNTOS_NIVEL = 1000;
+const PENALIZACION_CAIDA = 50;
 
 function crearJugador(nombre, x, color, izquierda, derecha, salto, archivo) {
   const imagen = new Image();
@@ -55,6 +70,7 @@ const gael = crearJugador("Gael", 49, "#ff9f43", "ArrowLeft", "ArrowRight", "Arr
 const jugadores = [izan, gael];
 
 let escena = "menu";
+let nivel = "carguero";
 let tiempo = 0;
 let puntos = 0;
 let acumulado = 0;
@@ -75,13 +91,14 @@ function cambiarEscena(nueva) {
   botonPausa.disabled = nueva !== "jugando";
 }
 
-function reiniciar() {
-  tiempo = 0;
-  puntos = 0;
+function reiniciarSala() {
   terminal.activo = false;
   caja.x = caja.inicioX;
   placa.activa = false;
   puerta.abierta = false;
+  plataformaMovil.x = plataformaMovil.inicio;
+  plataformaMovil.direccion = 1;
+  plataformaMovil.espera = 1;
   for (const jugador of jugadores) {
     jugador.x = jugador.inicioX;
     jugador.y = Y_SUELO - jugador.h;
@@ -93,10 +110,23 @@ function reiniciar() {
 }
 
 function empezar() {
-  reiniciar();
+  nivel = "carguero";
+  tiempo = 0;
+  puntos = 0;
+  entrarEnSala();
+}
+
+function entrarEnSala() {
+  reiniciarSala();
   cambiarEscena("jugando");
   actualizarObjetivo();
   document.activeElement?.blur();
+}
+
+function entrarEnHelix() {
+  if (nivel !== "carguero" || escena !== "resultado") return;
+  nivel = "helix";
+  entrarEnSala();
 }
 
 function pausar() {
@@ -145,16 +175,17 @@ document.querySelector("#volver-ajustes").addEventListener("click", volverAlMenu
 abrirDesdeMenu("#ayuda", () => mostrarInformacion("CÓMO JUGAR",
   '<p><strong class="cian">Izan:</strong> A y D para moverse, W para saltar y E junto al terminal.</p>' +
   '<p><strong class="naranja">Gael:</strong> ← y → para moverse, ↑ para saltar. Mantén Intro mientras andas hacia la caja.</p>' +
-  '<p>Enciende el terminal, deja la caja sobre la placa y cruza la puerta con los dos hermanos. Esc abre la pausa.</p>'));
+  '<p>En el Carguero, enciende el terminal y deja la caja sobre la placa. En Helix, cruzad en la plataforma móvil y saltad en la zona violeta. Esc abre la pausa.</p>'));
 abrirDesdeMenu("#creditos", () => mostrarInformacion("ÓRBITA TRES",
   '<img class="logo" src="img/logo.png" alt="Super Estrella"><p>Grupo J · Juegos en Red · URJC</p>' +
   '<p>José Antonio Najarro Camacho<br>Víctor Martín Monterrubio<br>Daniel Heredia Naranjo</p>' +
   '<p>Super Estrella · Código bajo licencia Apache 2.0.</p>'));
 document.querySelector("#volver").addEventListener("click", volverAlMenu);
 document.querySelector("#continuar").addEventListener("click", continuar);
-document.querySelector("#reiniciar").addEventListener("click", empezar);
+document.querySelector("#reiniciar").addEventListener("click", entrarEnSala);
 document.querySelector("#salir").addEventListener("click", volverAlMenu);
-document.querySelector("#repetir").addEventListener("click", empezar);
+botonRepetir.addEventListener("click", empezar);
+botonSiguiente.addEventListener("click", entrarEnHelix);
 document.querySelector("#menu-resultado").addEventListener("click", volverAlMenu);
 botonPausa.addEventListener("click", pausar);
 
@@ -194,7 +225,7 @@ function limitar(valor, minimo, maximo) {
 
 function moverJugador(jugador, dt, solidos) {
   const sentido = Number(teclas.has(jugador.derecha)) - Number(teclas.has(jugador.izquierda));
-  const empujando = jugador === gael && jugador.enSuelo &&
+  const empujando = nivel === "carguero" && jugador === gael && jugador.enSuelo &&
     (teclas.has("Enter") || teclas.has("NumpadEnter"));
   jugador.vx = sentido * (empujando ? FISICA.empuje : FISICA.velocidad);
   if (sentido !== 0) jugador.direccion = sentido;
@@ -206,12 +237,12 @@ function moverJugador(jugador, dt, solidos) {
   // Resolver cada eje por separado evita atravesar los sólidos.
   jugador.x = limitar(jugador.x + jugador.vx * dt, 0, canvas.width - jugador.w);
   for (const solido of solidos) {
-    if (!solapan(jugador, solido)) continue;
+    if (solido.soloDesdeArriba || !solapan(jugador, solido)) continue;
     if (sentido > 0) jugador.x = solido.x - jugador.w;
     else if (sentido < 0) jugador.x = solido.x + solido.w;
   }
 
-  if (sentido && solapan(jugador, caja)) {
+  if (nivel === "carguero" && sentido && solapan(jugador, caja)) {
     const borde = sentido > 0 ? jugador.x + jugador.w : jugador.x - caja.w;
     if (empujando && jugador.enSuelo) {
       const x = limitar(borde, riel.inicio, riel.fin - caja.w);
@@ -220,10 +251,13 @@ function moverJugador(jugador, dt, solidos) {
     jugador.x = sentido > 0 ? caja.x - jugador.w : caja.x + caja.w;
   }
 
-  jugador.vy += FISICA.gravedad * dt;
+  const gravedad = gravedadDe(jugador);
+  jugador.vy += gravedad * dt;
+  const piesAnteriores = jugador.y + jugador.h;
   jugador.y += jugador.vy * dt;
   jugador.enSuelo = false;
-  for (const solido of [...solidos, caja]) {
+  for (const solido of nivel === "carguero" ? [...solidos, caja] : solidos) {
+    if (solido.soloDesdeArriba && (jugador.vy <= 0 || piesAnteriores > solido.y)) continue;
     if (!solapan(jugador, solido)) continue;
     if (jugador.vy > 0) {
       jugador.y = solido.y - jugador.h;
@@ -233,6 +267,11 @@ function moverJugador(jugador, dt, solidos) {
     }
     jugador.vy = 0;
   }
+}
+
+function gravedadDe(jugador) {
+  return nivel === "helix" && jugador.x + jugador.w / 2 >= zonaGravedad.x
+    ? FISICA.gravedadHelix : FISICA.gravedad;
 }
 
 function enSueloDeLaSala(jugador) {
@@ -245,6 +284,13 @@ function juntoAlTerminal() {
 }
 
 function actualizarObjetivo() {
+  if (nivel === "helix") {
+    const objetivo = jugadores.every(j => j.x >= suelosHelix[1].x)
+      ? "Zona violeta: saltad con gravedad reducida hasta la salida superior."
+      : "Laboratorio Helix: esperad a la plataforma móvil y usadla para cruzar el hueco.";
+    if (estadoTexto.textContent !== objetivo) estadoTexto.textContent = objetivo;
+    return;
+  }
   const mensaje = !terminal.activo
     ? "Izan: sube a la primera plataforma y pulsa E junto al terminal."
     : !placa.activa
@@ -260,12 +306,19 @@ function formatearTiempo() {
 }
 
 function completarSala() {
-  puntos += PUNTOS_CARGUERO;
+  const quedaHelix = nivel === "carguero";
+  puntos += PUNTOS_NIVEL;
+  document.querySelector("#titulo-resultado").textContent = quedaHelix
+    ? "CARGUERO COMPLETADO" : "LABORATORIO COMPLETADO";
   document.querySelector("#resumen-resultado").textContent =
-    `El Carguero Silente · ${formatearTiempo()} · ${puntos} puntos`;
+    `Tiempo total: ${formatearTiempo()} · ${puntos} puntos`;
+  botonSiguiente.hidden = !quedaHelix;
+  botonRepetir.hidden = quedaHelix;
   cambiarEscena("resultado");
-  estadoTexto.textContent = "Los dos hermanos han llegado a la salida.";
-  document.querySelector("#repetir").focus();
+  estadoTexto.textContent = quedaHelix
+    ? "Una señal de Oris apunta al Laboratorio Helix."
+    : "Los dos hermanos descubren que Oris está conectado a un sistema de control.";
+  (quedaHelix ? botonSiguiente : botonRepetir).focus();
 }
 
 function actualizarPuzle() {
@@ -291,16 +344,54 @@ function actualizarPuzle() {
 
 function actualizar(dt) {
   tiempo += dt;
-  const solidos = [...plataformas, marco];
-  if (!puerta.abierta) solidos.push(puerta);
-  for (const jugador of jugadores) moverJugador(jugador, dt, solidos);
-  actualizarPuzle();
+  if (nivel === "helix") actualizarHelix(dt);
+  else {
+    const solidos = [...plataformas, marco];
+    if (!puerta.abierta) solidos.push(puerta);
+    for (const jugador of jugadores) moverJugador(jugador, dt, solidos);
+    actualizarPuzle();
+  }
   pulsaciones.clear();
+}
+
+function moverPlataforma(dt) {
+  const p = plataformaMovil;
+  if (p.espera > 0) {
+    p.espera -= dt;
+    return;
+  }
+  const xAnterior = p.x;
+  p.x = limitar(p.x + p.direccion * p.velocidad * dt, p.inicio, p.fin);
+  if (p.x === p.inicio || p.x === p.fin) {
+    p.direccion *= -1;
+    p.espera = 0.85;
+  }
+  for (const j of jugadores) {
+    // Los jugadores apoyados conservan su posición relativa a la plataforma.
+    if (j.enSuelo && j.y + j.h === p.y && j.x < xAnterior + p.w && j.x + j.w > xAnterior) {
+      j.x += p.x - xAnterior;
+    }
+  }
+}
+
+function actualizarHelix(dt) {
+  moverPlataforma(dt);
+  const solidos = [...suelosHelix, plataformaMovil];
+  for (const j of jugadores) moverJugador(j, dt, solidos);
+  if (jugadores.some(j => j.y >= canvas.height)) {
+    puntos = Math.max(0, puntos - PENALIZACION_CAIDA);
+    entrarEnSala();
+  } else if (jugadores.every(j => j.enSuelo && j.y + j.h === salidaHelix.y && j.x >= salidaHelix.x)) {
+    completarSala();
+  } else {
+    actualizarObjetivo();
+  }
 }
 
 // Fuente pixelart: cada dígito hexadecimal codifica una fila de cuatro píxeles.
 const LETRAS_PIXEL = {
-  A: "699F999", E: "F88E88F", G: "788B997", I: "E44444E",
+  A: "699F999", D: "E99999E", E: "F88E88F", G: "788B997", I: "E44444E",
+  H: "999F999", X: "9966699",
   L: "888888F", M: "9FF9999", N: "9DDBB99", O: "6999996",
   P: "E99E888", S: "788611E", T: "F444444", U: "9999996", Z: "F11248F",
   0: "6999996", 1: "4C4444E", 2: "691248F", 3: "E11611E",
@@ -372,7 +463,7 @@ function bloque(color, x, y, ancho, alto) {
   ctx.fillRect(x, y, ancho, alto);
 }
 
-function dibujarNave() {
+function dibujarNave(suelos) {
   bloque("#0b1026", 0, 0, 320, 180);
   bloque("#182139", 0, 27, 320, 135);
 
@@ -394,7 +485,7 @@ function dibujarNave() {
     bloque("#d1e4ed", x + 6, 30, 46, 1);
   }
 
-  for (const {x, y, w, h} of plataformas) {
+  for (const {x, y, w, h} of suelos) {
     bloque("#3a465e", x, y, w, h);
     bloque("#8290a4", x, y, w, 2);
     bloque("#202a3f", x, y + h - 2, w, 2);
@@ -452,17 +543,63 @@ function dibujarPuzle() {
   bloque("#eda258", x + 4, caja.y + 7, caja.w - 8, 3);
 }
 
+function dibujarHelix() {
+  const { x, y, w, h } = zonaGravedad;
+  for (let fila = y + 14; fila < y + h; fila += 2) {
+    bloque("#4a407e", x, fila, 1, 1);
+  }
+  for (let fila = 53; fila < 151; fila += 24) {
+    for (const columna of [250, 264, 304]) {
+      bloque("#6e58a0", columna + 2, fila, 2, 1);
+      bloque("#60508e", columna + 1, fila + 1, 4, 1);
+      bloque("#504679", columna, fila + 2, 6, 1);
+      bloque("#60508e", columna + 2, fila + 3, 2, 4);
+    }
+  }
+  bloque("#322b56", x + 1, 43, w - 1, 3);
+  bloque("#bc9cff", x + 2, 43, w - 2, 1);
+
+  bloque("#10182d", 118, 151, 88, 29);
+  bloque("#080d1c", 118, 165, 88, 15);
+  for (const borde of [108, 206]) {
+    bloque("#ffbd59", borde, Y_SUELO, 10, 2);
+    bloque("#8c613b", borde + 2, Y_SUELO + 3, 6, 2);
+  }
+
+  const p = plataformaMovil;
+  bloque("#1a283e", p.inicio, p.y + 6, p.fin - p.inicio + p.w, 3);
+  bloque("#3b526f", p.inicio, p.y + 7, p.fin - p.inicio + p.w, 1);
+  const px = Math.round(p.x);
+  bloque("#294865", px, p.y, p.w, p.h);
+  bloque("#c3f5ff", px, p.y, p.w, 1);
+  bloque("#36d1dc", px + 2, p.y + 1, p.w - 4, 2);
+  bloque("#ffe66d", px + 2, p.y + 3, 4, 1);
+  bloque("#ffe66d", px + p.w - 6, p.y + 3, 4, 1);
+
+  bloque("#151c32", salidaHelix.x, salidaHelix.y - 28, 35, 28);
+  bloque("#7e6a49", salidaHelix.x, salidaHelix.y - 28, 35, 2);
+  bloque("#ffe66d", salidaHelix.x + 3, salidaHelix.y - 26, 2, 26);
+  bloque("#ffe66d", salidaHelix.x + 30, salidaHelix.y - 26, 2, 26);
+  textoPixel("SALIDA", salidaHelix.x + 3, 57, "#ffe66d");
+}
+
 function dibujarHUD() {
   bloque("#0b1026", 0, 0, 320, 23);
   bloque("#28334d", 0, 22, 320, 1);
   const marcador = `PUNTOS  ${String(puntos).padStart(4, "0")}`;
   textoPixel(`TIEMPO  ${formatearTiempo()}`, 10, 8, "#e4edf4");
+  if (nivel === "helix") textoPixel("HELIX", 148, 8, "#bc9cff");
   textoPixel(marcador, canvas.width - 10 - anchoTextoPixel(marcador), 8, "#ffe66d");
 }
 
 function dibujar() {
-  dibujarNave();
-  dibujarPuzle();
+  if (nivel === "helix") {
+    dibujarNave(suelosHelix);
+    dibujarHelix();
+  } else {
+    dibujarNave(plataformas);
+    dibujarPuzle();
+  }
   for (const jugador of jugadores) dibujarJugador(jugador);
   dibujarNombres();
   dibujarHUD();
